@@ -1,12 +1,7 @@
-# Welcome to your CDK TypeScript Construct Library project
+# OPEA Demo Builder
 
-You should explore the contents of this project. It demonstrates a CDK Construct Library that includes a construct (`OpeaDemoBuilder`)
-which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
+This is a CDK library that will build the constructs that make up the Opea CDK application. This package will allow users to select any module from Opea's GenAIExamples that has Kubernetes support (support for docker compose can be added in the future), and create an EKS cluster using any combination of components.
 
-The construct defines an interface (`OpeaDemoBuilderProps`) to configure the visibility timeout of the queue.
+The `KubernetesModule` class automatically consumes all xeon manifests from the chosen example module, converts them into JSON objects, and combines with user-provided values either passed as arguments or within their own config file. Once the JSON objects are fully customized, they are then converted into helm charts and passed to the CDK's EKS module.
 
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
+Running `cdk synth` at the top level of the stack package (coming soon) will output an Amazon CloudFormation template that will deploy these resources into any AWS account.
