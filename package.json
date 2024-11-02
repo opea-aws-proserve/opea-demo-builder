@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
@@ -20,5 +21,10 @@
   "peerDependencies": {
     "aws-cdk-lib": "2.122.0",
     "constructs": "^10.0.0"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.0"
   }
 }
