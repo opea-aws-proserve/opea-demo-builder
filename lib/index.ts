@@ -1,32 +1,12 @@
-import { Cluster, ClusterProps, DefaultCapacityType } from "aws-cdk-lib/aws-eks";
+import { Cluster, DefaultCapacityType } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
 import { getAlbVersion, getClusterLogLevel, getKVersion } from "./util";
 import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
-import { Repository } from "aws-cdk-lib/aws-ecr";
 import { InstanceClass, InstanceSize, InstanceType } from "aws-cdk-lib/aws-ec2";
 import * as Constants from './constants.json';
 import { Size } from "aws-cdk-lib";
-
-type StringObject = {
-    [key: string]: string
-}
-
-type AnyObject = {
-    [key: string]: any
-}
-export interface OpeaEksProps {
-    module?: string
-    clusterName?: string
-    kubernetesVersion?: string
-    albVersion?: string
-    repository?: Repository
-    clusterProps?: Partial<ClusterProps>
-    environmentVariables?: StringObject
-    logLevel?: string
-    assetPaths?: string[]
-    helmValues?: AnyObject
-}
+import { OpeaEksProps } from "./types";
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;

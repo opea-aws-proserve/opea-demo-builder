@@ -2,14 +2,14 @@ import { readdirSync, readFileSync } from "fs";
 import { pathFinder } from "../util";
 import { ExampleModule } from "./example-module";
 import { join } from "path";
-import { JSON_SCHEMA, load, loadAll } from "js-yaml";
-
+import { JSON_SCHEMA, loadAll } from "js-yaml";
+import { KubernetesModuleOptions } from "../types";
 
 export class KubernetesModule extends ExampleModule {
     kubernetesPath: string
     assets: {[name:string]: Record<string,any>} = {}
     
-    constructor(moduleName:string) {
+    constructor(moduleName:string, options:KubernetesModuleOptions = {}) {
         super(moduleName);
         const kubernetesPath = this.getKubernetesPath();
         if (!kubernetesPath) throw new Error(`Module ${this.moduleName} does not support kubernetes yet`);
@@ -29,6 +29,9 @@ export class KubernetesModule extends ExampleModule {
                 }
                 return acc;
             }, {} as Record<string,any>);
+        }
+        if (this.useContainerizedUi) {
+            // TODO: Add logic for containerized UI after full docker support is added
         }
     }
 

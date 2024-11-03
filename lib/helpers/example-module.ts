@@ -2,10 +2,7 @@ import { join } from "path";
 import { ExampleManager, examplePath } from "./example-manager";
 import { pathFinder } from "../util";
 import { existsSync } from "fs";
-
-export interface ExampleModuleOptions {
-    uiType?:string
-}
+import { ExampleModuleOptions } from "../types";
 
 export class ExampleModule {
     readonly moduleName:string;
@@ -23,6 +20,18 @@ export class ExampleModule {
         if (!name) throw new Error(`Module ${moduleName} not found`);
         this.moduleName = name;
         this.modulePath = join(examplePath, this.moduleName);
+    }
+
+    get useServerlessUi():boolean {
+        return !!this.options.uiType && 
+            !(/(none|docker)/i.test(this.options.uiType)) &&
+            !!this.options.serverlessUi &&
+            !!this.getUiPath();
+    }
+
+    get useContainerizedUi(): boolean {
+        return /docker/i.test(this.options.uiType || '') &&
+            !!this.getUiPath();
     }
 
     getComposePath():string | undefined {
@@ -46,4 +55,5 @@ export class ExampleModule {
         if (!this.options?.uiType || this.options.uiType === 'none') return undefined;
         return pathFinder(this.modulePath, `ui/${this.options.uiType}`);
     }
+
 }
