@@ -2,9 +2,8 @@
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
 import { join } from "path";
-import { ExampleManager, examplePath } from "../lib/helpers/example-manager";
+import { examplePath } from "../lib/helpers/example-manager";
 import { getVersionNumber, getLatestKVersion, capitalize, pathFinder } from "../lib/util";
-import { KubernetesModule } from "../lib/helpers/kubernetes-module";
 // example test. To run these tests, uncomment this file along with the
 // example resource in lib/util-stack.ts
 // test('SQS Queue Created', () => {
@@ -40,8 +39,6 @@ describe("Util functions", () => {
         expect(capitalize("give_me_capitals")).toEqual("GiveMeCapitals");   
         expect(capitalize("give_me_capitals", "-")).toEqual("Give-Me-Capitals");    
         expect(pathFinder(join(examplePath, "ChatQnA/kubernetes"))).toEqual(join(examplePath, "ChatQnA/kubernetes/intel/cpu/xeon"))   
-    
-        console.log((new KubernetesModule('ChatQnA')).assets)
     });
 
 })

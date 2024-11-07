@@ -1,24 +1,12 @@
 import { Repository } from "aws-cdk-lib/aws-ecr"
-import { ClusterProps } from "aws-cdk-lib/aws-eks"
+import { ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
 
-export interface ExampleModuleOptions {
-    uiType?:string
-    serverlessUi?:boolean
-}
 
-export interface KubernetesModuleOptions extends ExampleModuleOptions {
-
-}
-
-type StringObject = {
-    [key: string]: string
-}
-
-type AnyObject = {
-    [key: string]: any
-}
 export interface OpeaEksProps {
-    module?: string
+    module: string
+    containers?:string[]
+    moduleOptions?: KubernetesModuleOptions
+    helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
     albVersion?: string
@@ -28,6 +16,32 @@ export interface OpeaEksProps {
     logLevel?: string
     assetPaths?: string[]
     helmValues?: AnyObject
+}
+
+type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+};
+
+export interface ExampleModuleOptions {
+    uiType?:string
+    serverlessUi?:boolean
+}
+
+export interface KubernetesModuleOptions extends ExampleModuleOptions {
+    containerName?: string
+    overridesFile?: string
+    overrides?: HelmOverrides
+    chartAssetName?:string
+    useYamlExtension?:boolean
+  //  helmOptions?: OpeaHelmOptions
+}
+
+type StringObject = {
+    [key: string]: string
+}
+
+type AnyObject = {
+    [key: string]: any
 }
 
 export interface OpeaHelmOptions {
@@ -40,7 +54,7 @@ export interface OpeaHelmOptions {
 export interface HelmTemplate<Kind extends string> {
     apiVersion:string
     kind: Kind
-    metadata?: HelmMetadata
+    metadata: HelmMetadata
 }
 
 export interface HelmTemplateConfigMap extends HelmTemplate<"ConfigMap"> {
@@ -49,6 +63,10 @@ export interface HelmTemplateConfigMap extends HelmTemplate<"ConfigMap"> {
 
 export interface HelmTemplateService extends HelmTemplate<"Service"> {
     spec: HelmSpec
+}
+
+export interface HelmTemplateDeployment extends HelmTemplate<"Deployment"> {
+    spec: HelmDeploymentSpec
 }
 
 export interface HelmContainer {
@@ -68,7 +86,7 @@ export interface HelmContainer {
 }
 
 export interface HelmMetadata {
-    name?: string
+    name: string
     labels: StringObject
 }
 
@@ -92,7 +110,7 @@ export interface HelmPort {
 }
 
 export interface HelmSpecTemplate {
-    metadata: HelmMetadata
+    metadata: Partial<HelmMetadata>
     spec: {
         containers: HelmContainer[]
         securityContext?: HelmSecurityContext
@@ -111,6 +129,12 @@ export interface HelmVolume {
         medium?:string
         sizeLimit?:string
     }
+}
+
+export type HelmKind = (HelmTemplateConfigMap | HelmTemplateDeployment | HelmTemplateService)
+
+export interface HelmOverrides {
+    [name:string]: RecursivePartial<HelmKind>
 }
 
 export interface HelmProbe {
