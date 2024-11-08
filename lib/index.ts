@@ -24,10 +24,10 @@ export class OpeaEksCluster extends Construct {
         this.cluster = new Cluster(this, `${id}-opea-eks-cluster`, {            
             kubectlLayer: new KubectlLayer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
-            albController: {
+            /*albController: {
                 version: getAlbVersion(props?.albVersion),
                 repository: props?.repository ? props.repository.repositoryUri : undefined
-            },
+            },*/
             defaultCapacityType: DefaultCapacityType.EC2,
             defaultCapacityInstance: InstanceType.of(InstanceClass.MEMORY7_INTEL, InstanceSize.XLARGE24),
             defaultCapacity: 1,
@@ -50,11 +50,12 @@ export class OpeaEksCluster extends Construct {
         const kbs = containers.map(container => {
             if (container) moduleOptions.containerName = container
             const kb = new KubernetesModule(props.module, moduleOptions);
-            kb.writeYml(props.module)
-            return kb;
+            return kb.writeYml(props.module)
         });
-        const filename = kbs[0].filename;
+        const filename = kbs[0]
+        console.log("FILENAME", filename);
         const pathname = kbs.length > 1 ? path.dirname(filename) : filename;
+        console.log("PATHNAME", pathname);
         const opt = props.helmChartOptions || {};
         this.helmChart = this.cluster.addHelmChart(`${id}-helm-chart`, {
             createNamespace: true,

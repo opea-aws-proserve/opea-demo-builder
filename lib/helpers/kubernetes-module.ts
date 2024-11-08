@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdir, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { pathFinder } from "../util";
 import { ExampleModule } from "./example-module";
 import { join } from "path";
@@ -70,10 +70,20 @@ export class KubernetesModule extends ExampleModule {
 
     writeYaml(dir?: string, yml?:string): string {return this.writeYml(yml, dir)}
     writeYml(dir:string = "", yml?:string): string {
-        const file = join(tmpdir(), dir, this.filename);
+        const dirname = join(tmpdir(), dir);
+        if (!existsSync(dirname)) {
+            try {
+                mkdirSync(dirname);
+            } catch(e) {
+                throw new Error(`Error writing yaml file: ${dirname}`);
+            }
+        }
+        const file = join(dirname, this.filename);
         const text = yml ? yml : this.createYml();
         const testText = text.substring(0,10);
+        
         writeFileSync(file, text);
+        
         let res:string
         try {
             res = readFileSync(file).toString();
