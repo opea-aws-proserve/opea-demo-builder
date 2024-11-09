@@ -1,21 +1,21 @@
-import { Repository } from "aws-cdk-lib/aws-ecr"
+import { InstanceType } from "aws-cdk-lib/aws-ec2"
 import { ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
     module: string
+    principal?:string
     containers?:string[]
     moduleOptions?: KubernetesModuleOptions
-    helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
+   // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
     albVersion?: string
-    repository?: Repository
     clusterProps?: Partial<ClusterProps>
     environmentVariables?: StringObject
     logLevel?: string
-    assetPaths?: string[]
-    helmValues?: AnyObject
+    instanceType?: InstanceType
+    additionalInstanceTypes?: InstanceType[]
 }
 
 type RecursivePartial<T> = {
@@ -30,10 +30,10 @@ export interface ExampleModuleOptions {
 export interface KubernetesModuleOptions extends ExampleModuleOptions {
     containerName?: string
     overridesFile?: string
-    overrides?: HelmOverrides
+    overrides?: ManifestOverrides
     chartAssetName?:string
     useYamlExtension?:boolean
-  //  helmOptions?: OpeaHelmOptions
+  //  manifestOptions?: OpeaManifestOptions
 }
 
 type StringObject = {
@@ -44,64 +44,65 @@ type AnyObject = {
     [key: string]: any
 }
 
-export interface OpeaHelmOptions {
+export interface OpeaManifestOptions {
     labels?: StringObject
-    containers?: HelmContainer[]
-    volumes?: HelmVolume[]
+    containers?: ManifestContainer[]
+    volumes?: ManifestVolume[]
     data?: AnyObject
 }
 
-export interface HelmTemplate<Kind extends string> {
+export interface ManifestTemplate<Kind extends string> {
     apiVersion:string
     kind: Kind
-    metadata: HelmMetadata
+    metadata: ManifestMetadata
 }
 
-export interface HelmTemplateConfigMap extends HelmTemplate<"ConfigMap"> {
+export interface ManifestTemplateConfigMap extends ManifestTemplate<"ConfigMap"> {
     data: StringObject
 }
 
-export interface HelmTemplateService extends HelmTemplate<"Service"> {
-    spec: HelmSpec
+export interface ManifestTemplateService extends ManifestTemplate<"Service"> {
+    spec: ManifestSpec
 }
 
-export interface HelmTemplateDeployment extends HelmTemplate<"Deployment"> {
-    spec: HelmDeploymentSpec
+export interface ManifestTemplateDeployment extends ManifestTemplate<"Deployment"> {
+    spec: ManifestDeploymentSpec
 }
 
-export interface HelmContainer {
+export interface ManifestContainer {
     name: string
     image: string
     imagePullPolicy?: string
-    ports: HelmPort[]
+    ports: ManifestPort[]
     resources?: AnyObject
-    securityContext?: HelmSecurityContext
-    volumeMounts?: HelmVolumeMount[]
-    startupProbe?:HelmProbe
-    livenessProbe?:HelmProbe
-    readinessProbe?:HelmProbe
+    securityContext?: ManifestSecurityContext
+    volumeMounts?: ManifestVolumeMount[]
+    startupProbe?:ManifestProbe
+    livenessProbe?:ManifestProbe
+    readinessProbe?:ManifestProbe
     args?:any
     envFrom?:AnyObject
     env?:AnyObject
 }
 
-export interface HelmMetadata {
+export interface ManifestMetadata {
     name: string
     labels: StringObject
+    namespace?:string
 }
 
-export interface HelmSpec {
+export interface ManifestSpec {
     type: string
-    ports: HelmPort[]
+    ports: ManifestPort[]
     selector: StringObject
 }
 
-export interface HelmDeploymentSpec {
-    template: HelmSpecTemplate
+export interface ManifestDeploymentSpec {
+    template: ManifestSpecTemplate
     selector: {matchLabels: StringObject}
     replicas?:number
 }
-export interface HelmPort {
+export interface ManifestPort {
     port:number
     targetPort?:number
     containerPort?: number
@@ -109,21 +110,21 @@ export interface HelmPort {
     name?:string
 }
 
-export interface HelmSpecTemplate {
-    metadata: Partial<HelmMetadata>
+export interface ManifestSpecTemplate {
+    metadata: Partial<ManifestMetadata>
     spec: {
-        containers: HelmContainer[]
-        securityContext?: HelmSecurityContext
-        volumes?: HelmVolume[]
+        containers: ManifestContainer[]
+        securityContext?: ManifestSecurityContext
+        volumes?: ManifestVolume[]
     }
 }
 
-export interface HelmVolumeMount {
+export interface ManifestVolumeMount {
     mountPath: string
     name?: string
 }
 
-export interface HelmVolume {
+export interface ManifestVolume {
     name: string
     emptyDir?: {
         medium?:string
@@ -131,13 +132,13 @@ export interface HelmVolume {
     }
 }
 
-export type HelmKind = (HelmTemplateConfigMap | HelmTemplateDeployment | HelmTemplateService)
+export type ManifestKind = (ManifestTemplateConfigMap | ManifestTemplateDeployment | ManifestTemplateService)
 
-export interface HelmOverrides {
-    [name:string]: RecursivePartial<HelmKind>
+export interface ManifestOverrides {
+    [name:string]: RecursivePartial<ManifestKind> 
 }
 
-export interface HelmProbe {
+export interface ManifestProbe {
     tcpSocket?: {port:number}
     httpGet?: {path:string, port:number | string}
     httpPost?: {path:string, port:number | string}
@@ -147,7 +148,7 @@ export interface HelmProbe {
     failureThreshold?:number
 }
 
-export interface HelmSecurityContext {
+export interface ManifestSecurityContext {
     allowPrivilegeEscalation?: boolean
     capabilities?: AnyObject  
     readOnlyRootFilesystem?: boolean

@@ -18,6 +18,5 @@ export class OpeaInfraStack extends Stack {
         "chatqna-guardrails"
       ]
     });
-    
   }
 }

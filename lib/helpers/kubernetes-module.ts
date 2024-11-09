@@ -1,14 +1,15 @@
-import { existsSync, mkdir, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { pathFinder } from "../util";
 import { ExampleModule } from "./example-module";
 import { join } from "path";
 import { DEFAULT_SCHEMA, dump, JSON_SCHEMA, loadAll } from "js-yaml";
-import { HelmKind, HelmOverrides, KubernetesModuleOptions } from "../types";
+import { ManifestKind, ManifestOverrides, KubernetesModuleOptions } from "../types";
 import {merge} from 'lodash'
 import { tmpdir } from "os";
+import { defaultOverrides } from "../constants";
 export class KubernetesModule extends ExampleModule {
     kubernetesPath: string
-    assets: HelmKind[]
+    assets: ManifestKind[]
     containerName:string
     constructor(moduleName:string, protected options:KubernetesModuleOptions = {}) {
         super(moduleName);
@@ -27,6 +28,7 @@ export class KubernetesModule extends ExampleModule {
                         schema: JSON_SCHEMA,
                         filename: fullpath
                     });
+                    writeFileSync("a.json",JSON.stringify(acc[key]));
                 }
                 return acc;
             }, {} as Record<string,any>);
@@ -37,7 +39,7 @@ export class KubernetesModule extends ExampleModule {
                 else this.containerName = keys[0];
             } else this.containerName = Object.keys(assets)[0];
             this.assets = assets[this.containerName];
-            let overrides:HelmOverrides = {};
+            let overrides:ManifestOverrides = {};
 
             if (options.overridesFile && existsSync(options.overridesFile)) {
                 const file = readFileSync(options.overridesFile).toString('utf-8');
@@ -47,9 +49,9 @@ export class KubernetesModule extends ExampleModule {
                         json:true,
                         schema: JSON_SCHEMA,
                         filename: options.overridesFile
-                    }) as unknown as HelmOverrides;
+                    }) as unknown as ManifestOverrides;
                 } else if (options.overridesFile.endsWith('.json')) {
-                    overrides = JSON.parse(file) as HelmOverrides;
+                    overrides = JSON.parse(file) as ManifestOverrides;
                 }
             }
             if (options.overrides) overrides = {...overrides, ...options.overrides};
@@ -102,13 +104,15 @@ export class KubernetesModule extends ExampleModule {
         })
     }
 
-    protected parseOverrides(overrides:HelmOverrides) {
+    protected parseOverrides($overrides:ManifestOverrides) {
+        const overrides = {...(defaultOverrides as ManifestOverrides), ...$overrides};
         Object.keys(overrides).forEach(override => {
             const chartIndex = this.assets.findIndex(a => a.metadata.name === override);
             if (chartIndex > -1) {
                 const replacement = merge(this.assets[chartIndex], overrides[override]);
-                this.assets.splice(chartIndex, 1, replacement as HelmKind);
+                this.assets.splice(chartIndex, 1, replacement as ManifestKind);
             }
         });
+
     }
 }

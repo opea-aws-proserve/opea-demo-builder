@@ -1,7 +1,6 @@
 {
-    "helmCharts": [
-
-    ],
+    "manifests": {},
+    "helmCharts": [],
     "intelXeonClasses": [
         "STANDARD5_HIGH_COMPUTE",
         "M5ZN",

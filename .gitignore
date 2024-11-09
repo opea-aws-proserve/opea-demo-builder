@@ -138,3 +138,6 @@ node_modules
 .cdk.staging
 cdk.out
 /assets/genai-examples
+/etc
+cdk.context.json
+!env.jest.js

@@ -2,8 +2,7 @@
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
 import { KubernetesModule } from "../lib/helpers/kubernetes-module";
-import { writeFileSync } from "fs";
-import { HelmTemplateService } from "../lib/types";
+import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/types";
 
 describe("Module functions", () => {
     it("Check assets", () => {
@@ -35,8 +34,17 @@ describe("Module functions", () => {
        expect(kb.assets[0].metadata.labels["helm.sh/chart"]).toEqual("data-prep-1.0.1")
        expect(kb.assets[0].metadata.labels["app.kubernetes.io/version"]).toEqual("v1.1")
        expect(rerank.metadata.labels["app.kubernetes.io/version"]).toEqual("cpu-1.6")
-       expect((rerank as HelmTemplateService).spec.ports[0].targetPort).toEqual(2083)
-       console.log(kb.createYml());
+       expect((rerank as ManifestTemplateService).spec.ports[0].targetPort).toEqual(2083)
     });
+});
+
+describe("Tokens", () => {
+    it("Token is replaced", () => {
+        const kb = new KubernetesModule('ChatQnA');
+        const retriever = kb.assets.find(n => n.metadata.name === "chatqna-retriever-usvc-config");
+        expect((retriever as ManifestTemplateConfigMap).data["HUGGINGFACEHUB_API_TOKEN"]).toEqual("token");
+        const prep = kb.assets.find(n => n.metadata.name === "chatqna-data-prep-config");
+        expect((prep as ManifestTemplateConfigMap).data["HUGGINGFACEHUB_API_TOKEN"]).toEqual("token");
+    })
 
 })
