@@ -1,11 +1,13 @@
 import { InstanceType } from "aws-cdk-lib/aws-ec2"
-import { ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
+import { ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
     module: string
     principal?:string
+    modelId?:string
     containers?:string[]
+    huggingFaceToken?:string
     moduleOptions?: KubernetesModuleOptions
    // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string

@@ -1,13 +1,15 @@
-import { AccessEntry, AccessEntryType, AccessPolicyArn, AccessScopeType, AuthenticationMode, CapacityType, Cluster, DefaultCapacityType, EndpointAccess, HelmChart, KubernetesManifest, Nodegroup, NodegroupAmiType } from "aws-cdk-lib/aws-eks";
+import { AccessEntry, AccessEntryType, AccessPolicyArn, AccessScopeType, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, KubernetesManifest } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
 import { getClusterLogLevel, getKVersion } from "./util";
 import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
-import { InstanceClass, InstanceSize, InstanceType, LaunchTemplate, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from './constants.json';
 import { Size, Stack } from "aws-cdk-lib";
 import { OpeaEksProps } from "./types";
 import { KubernetesModule } from "./helpers/kubernetes-module";
+import { networkInterfaces } from "os";
+import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 
 
 export class OpeaEksCluster extends Construct {
@@ -42,6 +44,7 @@ export class OpeaEksCluster extends Construct {
         this.cluster = new Cluster(this, `${id}-opea-eks-cluster`, {            
             kubectlLayer: new KubectlLayer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
+            onEventLayer: new NodeProxyAgentLayer(this, `${id}-node-proxy-agent-layer`),
             vpc: this.vpc,
             /*albController: {
                 version: getAlbVersion(props?.albVersion),
@@ -61,6 +64,9 @@ export class OpeaEksCluster extends Construct {
             clusterLogging: getClusterLogLevel(props?.logLevel, props?.clusterProps?.clusterLogging),
             clusterName: props?.clusterName || props?.clusterProps?.clusterName || `${id}-opea-eks-cluster`,
             kubectlEnvironment: {
+                HUGGINGFACEHUB_API_TOKEN: props.huggingFaceToken || "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";  // TODO - remove this
+                host_ip: "",
+                no_proxy: "localhost",
                 ...(props?.environmentVariables || {}),
                 ...(props?.clusterProps?.kubectlEnvironment || {})
             },
@@ -97,6 +103,7 @@ export class OpeaEksCluster extends Construct {
                 }
             ]
         });
+
         containers.forEach(container => {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
@@ -110,6 +117,7 @@ export class OpeaEksCluster extends Construct {
                     }
                 })
             }
+            
             const kb = new KubernetesModule(props.module, moduleOptions);
             kb.assets.forEach(asset => {
                 if (container) asset.metadata.namespace = container;
@@ -118,7 +126,6 @@ export class OpeaEksCluster extends Construct {
                 const manifest = this.cluster.addManifest(`${container}-${asset.kind}-${asset.metadata.name}`, asset);
                 if (container) manifest.node.addDependency(namespace);
             })
-        });
-        
+        });        
     }
 }

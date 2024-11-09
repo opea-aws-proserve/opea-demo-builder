@@ -10,7 +10,7 @@ export class OpeaInfraStack extends Stack {
         generateBootstrapVersionRule: false
       })
     });
-
+   
     new OpeaEksCluster(this, "OpeaEksCluster", {
       module: 'ChatQnA',
       containers: [
