@@ -39,7 +39,7 @@ export class OpeaEksCluster extends Construct {
             ],
             maxAzs:2
         })
-
+//TODO - add volume /mnt/opea-models
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
         this.cluster = new Cluster(this, `${id}-opea-eks-cluster`, {            
             kubectlLayer: new KubectlLayer(this, `${id}-kubectl-layer`),
@@ -58,6 +58,9 @@ export class OpeaEksCluster extends Construct {
             ...(props?.clusterProps || {}),
             version: props?.clusterProps?.version || getKVersion(props.kubernetesVersion),
             clusterHandlerEnvironment: {
+                HUGGINGFACEHUB_API_TOKEN: props.huggingFaceToken || "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";  // TODO - remove this
+                host_ip: "",
+                no_proxy: "localhost",
                 ...(props?.environmentVariables || {}), 
                 ...(props?.clusterProps?.clusterHandlerEnvironment || {})
             },
