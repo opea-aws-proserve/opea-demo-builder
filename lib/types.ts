@@ -4,11 +4,7 @@ import { ClusterProps } from "aws-cdk-lib/aws-eks"
 
 export interface OpeaEksProps {
     module: string
-    principal?:string
     modelId?:string
-    containers?:string[]
-    huggingFaceToken?:string
-    moduleOptions?: KubernetesModuleOptions
    // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
@@ -18,6 +14,9 @@ export interface OpeaEksProps {
     logLevel?: string
     instanceType?: InstanceType
     additionalInstanceTypes?: InstanceType[]
+    principal?:string
+    containers:string[]
+    moduleOptions?: KubernetesModuleOptions
 }
 
 type RecursivePartial<T> = {

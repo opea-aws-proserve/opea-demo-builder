@@ -1,8 +1,8 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
-import { OpeaEksCluster } from '../';
+import { OpeaEksCluster } from '../resources/cluster';
 import { Construct } from 'constructs';
 
-export class OpeaInfraStack extends Stack {
+export class OpeaEksStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, {
       ...props,

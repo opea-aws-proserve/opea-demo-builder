@@ -1,75 +1,91 @@
-import { AccessEntry, AccessEntryType, AccessPolicyArn, AccessScopeType, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, KubernetesManifest } from "aws-cdk-lib/aws-eks";
+import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, KubernetesManifest, KubernetesVersion } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
-import { getClusterLogLevel, getKVersion } from "./util";
-import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
+import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
-import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
-import * as Constants from './constants.json';
+import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import * as Constants from '../constants.json';
 import { Size, Stack } from "aws-cdk-lib";
-import { OpeaEksProps } from "./types";
-import { KubernetesModule } from "./helpers/kubernetes-module";
-import { networkInterfaces } from "os";
+import { OpeaEksProps } from "../types";
 import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
-
+import { HuggingFaceToken } from "../constants";
+import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
+import { KubernetesModule } from "../helpers/kubernetes-module";
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
     vpc:Vpc;
+    securityGroup: SecurityGroup
     
     readonly intelXeonClasses: (keyof typeof InstanceClass)[] = Constants.intelXeonClasses as (keyof typeof InstanceClass)[]
     constructor(
         scope: Construct, 
-        id: string, 
-        props: OpeaEksProps
+        protected id: string, 
+        protected props: OpeaEksProps
     ) {
         super(scope, id);
 
-        this.vpc = new Vpc(this, "ChatQnaVpc", {
+        this.vpc = new Vpc(this, "OpeaVpc", {
             subnetConfiguration: [
                 {
                     name: 'publicSubnet',
                     subnetType: SubnetType.PUBLIC,
                     cidrMask: 24 // Defines the size of each subnet as a smaller part of the VPC CIDR block
                 },
-                {
+               /* {
                     name: 'privateSubnet',
                     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
                     cidrMask: 24
-                },
-            ],
+                },*/
+            ],   
+            flowLogs: {
+                BriefingFlowLogs: {
+                    destination: FlowLogDestination.toCloudWatchLogs()
+                }
+            },
             maxAzs:2
         })
-//TODO - add volume /mnt/opea-models
+
+        const sg1 = new SecurityGroup(this, `${id}-sg1`, { 
+            vpc:this.vpc,
+            allowAllOutbound:true,
+            securityGroupName:`${id}-sg1`
+        });
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(80))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(5371))
+        this.securityGroup = sg1;
+        //TODO - add volume /mnt/opea-models
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
-        this.cluster = new Cluster(this, `${id}-opea-eks-cluster`, {            
-            kubectlLayer: new KubectlLayer(this, `${id}-kubectl-layer`),
+        this.cluster = new Cluster(this, `opea-eks-cluster`, {            
+            kubectlLayer: new KubectlV31Layer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
             onEventLayer: new NodeProxyAgentLayer(this, `${id}-node-proxy-agent-layer`),
             vpc: this.vpc,
-            /*albController: {
-                version: getAlbVersion(props?.albVersion),
-                repository: props?.repository ? props.repository.repositoryUri : undefined
-            },*/
+            vpcSubnets: [{subnetType:SubnetType.PUBLIC}],
+            albController: {
+                version: AlbControllerVersion.V2_8_2
+            },
             defaultCapacityType: DefaultCapacityType.EC2,
             defaultCapacityInstance: instanceType,
             defaultCapacity: 2,
             kubectlMemory: Size.mebibytes(2048),
             endpointAccess: EndpointAccess.PUBLIC_AND_PRIVATE,
             ...(props?.clusterProps || {}),
-            version: props?.clusterProps?.version || getKVersion(props.kubernetesVersion),
+            version: KubernetesVersion.V1_31,
             clusterHandlerEnvironment: {
-                HUGGINGFACEHUB_API_TOKEN: props.huggingFaceToken || "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";  // TODO - remove this
-                host_ip: "",
-                no_proxy: "localhost",
+                HUGGINGFACEHUB_API_TOKEN: HuggingFaceToken,
+            //    host_ip: "",
+            //    no_proxy: "localhost",
                 ...(props?.environmentVariables || {}), 
                 ...(props?.clusterProps?.clusterHandlerEnvironment || {})
             },
             clusterLogging: getClusterLogLevel(props?.logLevel, props?.clusterProps?.clusterLogging),
-            clusterName: props?.clusterName || props?.clusterProps?.clusterName || `${id}-opea-eks-cluster`,
+            clusterName: `opea-eks-cluster`,
             kubectlEnvironment: {
-                HUGGINGFACEHUB_API_TOKEN: props.huggingFaceToken || "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";  // TODO - remove this
-                host_ip: "",
-                no_proxy: "localhost",
+                HUGGINGFACEHUB_API_TOKEN: HuggingFaceToken,
+                //host_ip: "",
+                //no_proxy: "localhost",
                 ...(props?.environmentVariables || {}),
                 ...(props?.clusterProps?.kubectlEnvironment || {})
             },
@@ -79,16 +95,24 @@ export class OpeaEksCluster extends Construct {
         this.cluster.addNodegroupCapacity(`${id}-node-group`, {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
-            maxSize: 2,
-            nodegroupName: `${id}-node-group`
+            maxSize: 1,
+            diskSize: 50,
+            nodegroupName: `${id}-node-group`,
+            remoteAccess: process.env.KeyPair ? {
+                sshKeyName: process.env.KeyPair
+            } : undefined
         });
 
-        const moduleOptions = props.moduleOptions || {}
-        const containers = props.containers?.length ? props.containers : [""];
-        new AccessEntry(this, `${id}-access-entry`, {
-            cluster: this.cluster,
+        this.updateCluster(this.cluster);
+    }
+
+    updateCluster(cluster:Cluster) {
+        const moduleOptions = this.props.moduleOptions || {}
+        const containers = this.props.containers?.length ? this.props.containers : [""];
+        new AccessEntry(this, `${this.id}-access-entry`, {
+            cluster,
             accessEntryType: "STANDARD" as any,
-            principal: process.env.PARTICIPANT_ASSUMED_ROLE_ARN || props.principal || `arn:aws:iam::${Stack.of(this).account}:role/Admin`,
+            principal: process.env.PARTICIPANT_ASSUMED_ROLE_ARN || this.props.principal || `arn:aws:iam::${Stack.of(this).account}:role/Admin`,
             accessPolicies: [
                 {
                     accessScope: {
@@ -112,7 +136,7 @@ export class OpeaEksCluster extends Construct {
             let namespace:KubernetesManifest;
             if (container) {
                 moduleOptions.containerName = container
-                namespace = this.cluster.addManifest(`${container}-namespace`, {
+                namespace = cluster.addManifest(`${container}-namespace`, {
                     apiVersion: "v1",
                     kind: "Namespace",
                     metadata: {
@@ -121,14 +145,15 @@ export class OpeaEksCluster extends Construct {
                 })
             }
             
-            const kb = new KubernetesModule(props.module, moduleOptions);
+            const kb = new KubernetesModule(this.props.module, moduleOptions);
             kb.assets.forEach(asset => {
                 if (container) asset.metadata.namespace = container;
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
-                const manifest = this.cluster.addManifest(`${container}-${asset.kind}-${asset.metadata.name}`, asset);
+                const manifest = cluster.addManifest(`${container}-${asset.kind}-${asset.metadata.name}`, asset);
                 if (container) manifest.node.addDependency(namespace);
             })
-        });        
+        });  
+
     }
 }

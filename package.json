@@ -8,7 +8,6 @@
     "test": "jest",
     "postinstall": "rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples"
   },
-
   "devDependencies": {
     "@types/jest": "^29.5.11",
     "@types/node": "20.11.5",
@@ -23,6 +22,7 @@
     "constructs": "^10.0.0"
   },
   "dependencies": {
+    "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
     "@types/aws-lambda": "^8.10.145",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.13",
