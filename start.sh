@@ -2,12 +2,10 @@
 
 STACK_OPERATION=$1
 npm install;
-if [[ "$STACK_OPERATION" == "create" || "$STACK_OPERATION" == "update" ]]; then
-    cdk bootstrap
-    cdk deploy --require-approval never --all
-elif [ "$STACK_OPERATION" == "delete" ]; then
+
+if [ "$STACK_OPERATION" == "delete" ]; then
     cdk destroy --force --all
 else
-    echo "Invalid stack operation!"
-    exit 1
+    cdk bootstrap
+    cdk deploy --require-approval never --all
 fi
