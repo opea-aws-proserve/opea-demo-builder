@@ -6,9 +6,24 @@ export const defaultOverrides = {
             "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
         }
     },
+    "chatqna-guardrails-usvc-config": {
+        "data": {
+            "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
+        }
+    },
     "chatqna-data-prep-config": {
         "data": {
             "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
+        }
+    },
+    "chatqna-tgi-guardrails-config": {
+        "data": {
+            "HF_TOKEN": HuggingFaceToken
+        }
+    },
+    "chatqna-tgi-config": {
+        "data": {
+            "HF_TOKEN": HuggingFaceToken
         }
     }
 }

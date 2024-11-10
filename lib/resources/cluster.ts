@@ -4,7 +4,7 @@ import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
 import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, PrefixList, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
-import { Size, Stack } from "aws-cdk-lib";
+import { Fn, Size, Stack } from "aws-cdk-lib";
 import { OpeaEksProps } from "../types";
 import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 import { HuggingFaceToken } from "../constants";
@@ -30,7 +30,7 @@ export class OpeaEksCluster extends Construct {
                 {
                     name: 'publicSubnet',
                     subnetType: SubnetType.PUBLIC,
-                    cidrMask: 24 // Defines the size of each subnet as a smaller part of the VPC CIDR block
+                   // cidrMask: 24 // Defines the size of each subnet as a smaller part of the VPC CIDR block
                 },
                /* {
                     name: 'privateSubnet',
@@ -43,7 +43,7 @@ export class OpeaEksCluster extends Construct {
                     destination: FlowLogDestination.toCloudWatchLogs()
                 }
             },
-            maxAzs:2
+           // availabilityZones: Fn.getAzs(Stack.of(this).region)
         })
 
         const sg1 = new SecurityGroup(this, `${id}-sg1`, { 
@@ -53,8 +53,18 @@ export class OpeaEksCluster extends Construct {
         });
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(80))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(7000))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8001))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(5371))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(5173))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(6379))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(6007))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2080))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2081))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2082))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2083))
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(9090))
+
         sg1.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.allTcp());
         this.securityGroup = sg1;
         //TODO - add volume /mnt/opea-models
@@ -94,16 +104,16 @@ export class OpeaEksCluster extends Construct {
             authenticationMode: AuthenticationMode.API_AND_CONFIG_MAP
         });
 
-        this.cluster.addNodegroupCapacity(`${id}-node-group`, {
+       /* this.cluster.addNodegroupCapacity(`${id}-node-group`, {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
             diskSize: 50,
-            nodegroupName: `${id}-node-group`,
+            nodegroupName: `${id}-nodegroup`,
             remoteAccess: process.env.KeyPair ? {
                 sshKeyName: process.env.KeyPair
             } : undefined
-        });
+        });*/
 
         this.updateCluster(this.cluster);
     }
