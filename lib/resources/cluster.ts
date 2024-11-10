@@ -82,7 +82,7 @@ export class OpeaEksCluster extends Construct {
             defaultCapacityType: DefaultCapacityType.EC2,
             defaultCapacityInstance: instanceType,
             defaultCapacity: 0,
-            kubectlMemory: Size.mebibytes(2048),
+            kubectlMemory: Size.mebibytes(4096),
             endpointAccess: EndpointAccess.PUBLIC_AND_PRIVATE,
             ...(props?.clusterProps || {}),
             version: KubernetesVersion.V1_31,
@@ -109,7 +109,7 @@ export class OpeaEksCluster extends Construct {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
-            diskSize: 50,
+            diskSize: 100,
             nodegroupName: `${id}-nodegroup`,
             remoteAccess: process.env.KeyPair ? {
                 sshKeyName: process.env.KeyPair
