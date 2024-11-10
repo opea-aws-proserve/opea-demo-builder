@@ -124,7 +124,7 @@ export class OpeaEksCluster extends Construct {
         new AccessEntry(this, `${this.id}-access-entry`, {
             cluster,
             accessEntryType: "STANDARD" as any,
-            principal: process.env.PARTICIPANT_ASSUMED_ROLE_ARN || this.props.principal || `arn:aws:iam::${Stack.of(this).account}:role/Admin`,
+            principal: process.env.PARTICIPANT_ROLE_ARN || this.props.principal || `arn:aws:iam::${Stack.of(this).account}:role/Admin`,
             accessPolicies: [
                 {
                     accessScope: {
