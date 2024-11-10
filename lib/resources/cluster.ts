@@ -104,7 +104,7 @@ export class OpeaEksCluster extends Construct {
             authenticationMode: AuthenticationMode.API_AND_CONFIG_MAP
         });
 
-       /* this.cluster.addNodegroupCapacity(`${id}-node-group`, {
+        this.cluster.addNodegroupCapacity(`${id}-node-group`, {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
@@ -113,7 +113,7 @@ export class OpeaEksCluster extends Construct {
             remoteAccess: process.env.KeyPair ? {
                 sshKeyName: process.env.KeyPair
             } : undefined
-        });*/
+        });
 
         this.updateCluster(this.cluster);
     }
