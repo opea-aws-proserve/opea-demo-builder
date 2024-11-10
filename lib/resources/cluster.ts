@@ -11,6 +11,7 @@ import { HuggingFaceToken } from "../constants";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
 import { KubernetesModule } from "../helpers/kubernetes-module";
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
+import { Role } from "aws-cdk-lib/aws-iam";
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
@@ -118,31 +119,43 @@ export class OpeaEksCluster extends Construct {
 
         this.updateCluster(this.cluster);
     }
-
+    
     updateCluster(cluster:Cluster) {
         const moduleOptions = this.props.moduleOptions || {}
         const containers = this.props.containers?.length ? this.props.containers : [""];
-        new AccessEntry(this, `${this.id}-access-entry`, {
-            cluster,
-            accessEntryType: "STANDARD" as any,
-            principal: process.env.PARTICIPANT_ROLE_ARN || this.props.principal || `arn:aws:iam::${Stack.of(this).account}:role/Admin`,
-            accessPolicies: [
-                {
-                    accessScope: {
-                        type: AccessScopeType.CLUSTER
-                    },
-                    policy: AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY.policyArn
-
+        const accessPolicies = [
+            {
+                accessScope: {
+                    type: AccessScopeType.CLUSTER
                 },
-                {
-                    accessScope: {
-                        type: AccessScopeType.NAMESPACE,
-                        namespaces: containers,
-                    },
-                    policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
-                }
-            ]
+                policy: AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY.policyArn
+
+            },
+            {
+                accessScope: {
+                    type: AccessScopeType.NAMESPACE,
+                    namespaces: containers,
+                },
+                policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
+            }
+        ]
+
+        const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
+        const addlPrincipals = process.env.OPEA_PRINCIPAL || "";
+        const roleNames = process.env.OPEA_ROLE_NAME || ""
+        const principals = addlPrincipals.split(',').map(a => a.trim());
+        principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
+        if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
+
+        principals.forEach(principal => {
+            const accessEntry = new AccessEntry(this, `${this.id}-access-entry`, {
+                cluster,
+                accessEntryType: "STANDARD" as any,
+                principal,
+                accessPolicies
+            });
         });
+
 
         containers.forEach(container => {
             const usedNames:string[] = [];

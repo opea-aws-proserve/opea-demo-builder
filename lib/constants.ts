@@ -1,5 +1,4 @@
-export const HuggingFaceToken = process.env.HUGGING_FACE_TOKEN || process.env.HUGGINGFACEHUB_API_TOKEN || "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"  // TODO - remove this
-
+export const HuggingFaceToken = process.env.HUGGING_FACE_TOKEN || process.env.HUGGINGFACEHUB_API_TOKEN || ""
 export const defaultOverrides = {
     "chatqna-retriever-usvc-config": {
         "data": {
