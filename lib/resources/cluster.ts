@@ -147,8 +147,8 @@ export class OpeaEksCluster extends Construct {
         principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
 
-        principals.forEach(principal => {
-            const accessEntry = new AccessEntry(this, `${this.id}-access-entry`, {
+        principals.forEach((principal,index) => {
+            const accessEntry = new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,
                 accessEntryType: "STANDARD" as any,
                 principal,
