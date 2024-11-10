@@ -15,6 +15,7 @@ export interface OpeaEksProps {
     instanceType?: InstanceType
     additionalInstanceTypes?: InstanceType[]
     principal?:string
+    nodeGroupDiskSize?:number
     containers:string[]
     moduleOptions?: KubernetesModuleOptions
 }

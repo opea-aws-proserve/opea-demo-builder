@@ -105,12 +105,12 @@ export class OpeaEksCluster extends Construct {
             },
             authenticationMode: AuthenticationMode.API_AND_CONFIG_MAP
         });
-
+        
         this.cluster.addNodegroupCapacity(`${id}-node-group`, {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
-            diskSize: 100,
+            diskSize: props.nodeGroupDiskSize || 100,
             nodegroupName: `${id}-nodegroup`,
             remoteAccess: process.env.KeyPair ? {
                 sshKeyName: process.env.KeyPair
