@@ -81,7 +81,7 @@ export class OpeaEksCluster extends Construct {
             },
             defaultCapacityType: DefaultCapacityType.EC2,
             defaultCapacityInstance: instanceType,
-            defaultCapacity: 1,
+            defaultCapacity: 0,
             kubectlMemory: Size.mebibytes(2048),
             endpointAccess: EndpointAccess.PUBLIC_AND_PRIVATE,
             ...(props?.clusterProps || {}),
