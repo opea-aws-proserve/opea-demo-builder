@@ -51,6 +51,7 @@ export class OpeaEksCluster extends Construct {
             allowAllOutbound:true,
             securityGroupName:`${id}-sg1`
         });
+        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(22))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(80))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(7000))
@@ -65,7 +66,7 @@ export class OpeaEksCluster extends Construct {
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2083))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(9090))
 
-        sg1.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.allTcp());
+        sg1.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.tcp(22));
         this.securityGroup = sg1;
         //TODO - add volume /mnt/opea-models
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
