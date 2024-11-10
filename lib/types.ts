@@ -16,7 +16,7 @@ export interface OpeaEksProps {
     additionalInstanceTypes?: InstanceType[]
     principal?:string
     nodeGroupDiskSize?:number
-    containers:string[]
+    containers:KubernetesModuleContainer[]
     moduleOptions?: KubernetesModuleOptions
 }
 
@@ -29,10 +29,14 @@ export interface ExampleModuleOptions {
     serverlessUi?:boolean
 }
 
-export interface KubernetesModuleOptions extends ExampleModuleOptions {
-    containerName?: string
+export interface KubernetesModuleContainer {
+    name:string
     overridesFile?: string
     overrides?: ManifestOverrides
+}
+
+export interface KubernetesModuleOptions extends ExampleModuleOptions {
+    container:KubernetesModuleContainer
     chartAssetName?:string
     useYamlExtension?:boolean
   //  manifestOptions?: OpeaManifestOptions

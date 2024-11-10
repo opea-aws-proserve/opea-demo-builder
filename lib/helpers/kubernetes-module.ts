@@ -6,12 +6,12 @@ import { DEFAULT_SCHEMA, dump, JSON_SCHEMA, loadAll } from "js-yaml";
 import { ManifestKind, ManifestOverrides, KubernetesModuleOptions } from "../types";
 import {merge} from 'lodash'
 import { tmpdir } from "os";
-import { defaultOverrides } from "../constants";
+
 export class KubernetesModule extends ExampleModule {
     kubernetesPath: string
     assets: ManifestKind[]
     containerName:string
-    constructor(moduleName:string, protected options:KubernetesModuleOptions = {}) {
+    constructor(moduleName:string, protected options:KubernetesModuleOptions) {
         super(moduleName);
         const kubernetesPath = this.getKubernetesPath();
         if (!kubernetesPath) throw new Error(`Module ${this.moduleName} does not support kubernetes yet`);
@@ -32,29 +32,29 @@ export class KubernetesModule extends ExampleModule {
                 }
                 return acc;
             }, {} as Record<string,any>);
-            if (options.containerName) {
+            if (options.container.name) {
                 const keys = Object.keys(assets);
-                const containerKey = keys.find(containerName => (new RegExp((options.containerName as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
+                const containerKey = keys.find(containerName => (new RegExp((options.container.name as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
                 if (containerKey) this.containerName = containerKey;
                 else this.containerName = keys[0];
             } else this.containerName = Object.keys(assets)[0];
             this.assets = assets[this.containerName];
             let overrides:ManifestOverrides = {};
 
-            if (options.overridesFile && existsSync(options.overridesFile)) {
-                const file = readFileSync(options.overridesFile).toString('utf-8');
-                if (options.overridesFile.endsWith('.yaml') || options.overridesFile.endsWith('.yml')) {
+            if (options.container.overridesFile && existsSync(options.container.overridesFile)) {
+                const file = readFileSync(options.container.overridesFile).toString('utf-8');
+                if (options.container.overridesFile.endsWith('.yaml') || options.container.overridesFile.endsWith('.yml')) {
 
                     overrides = loadAll(file, undefined, {
                         json:true,
                         schema: JSON_SCHEMA,
-                        filename: options.overridesFile
+                        filename: options.container.overridesFile
                     }) as unknown as ManifestOverrides;
-                } else if (options.overridesFile.endsWith('.json')) {
+                } else if (options.container.overridesFile.endsWith('.json')) {
                     overrides = JSON.parse(file) as ManifestOverrides;
                 }
             }
-            if (options.overrides) overrides = {...overrides, ...options.overrides};
+            if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
             this.parseOverrides(overrides);
         }
 
@@ -104,8 +104,7 @@ export class KubernetesModule extends ExampleModule {
         })
     }
 
-    protected parseOverrides($overrides:ManifestOverrides) {
-        const overrides = {...(defaultOverrides as ManifestOverrides), ...$overrides};
+    protected parseOverrides(overrides:ManifestOverrides) {
         Object.keys(overrides).forEach(override => {
             const chartIndex = this.assets.findIndex(a => a.metadata.name === override);
             if (chartIndex > -1) {

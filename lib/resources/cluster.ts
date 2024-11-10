@@ -121,8 +121,7 @@ export class OpeaEksCluster extends Construct {
     }
     
     updateCluster(cluster:Cluster) {
-        const moduleOptions = this.props.moduleOptions || {}
-        const containers = this.props.containers?.length ? this.props.containers : [""];
+        const containers = this.props.containers?.length ? this.props.containers : [];
         const accessPolicies = [
             {
                 accessScope: {
@@ -134,7 +133,7 @@ export class OpeaEksCluster extends Construct {
             {
                 accessScope: {
                     type: AccessScopeType.NAMESPACE,
-                    namespaces: containers,
+                    namespaces: containers.map(a => a.name),
                 },
                 policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
             }
@@ -148,7 +147,7 @@ export class OpeaEksCluster extends Construct {
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
 
         principals.forEach((principal,index) => {
-            const accessEntry = new AccessEntry(this, `${this.id}-access-entry-${index}`, {
+            new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,
                 accessEntryType: "STANDARD" as any,
                 principal,
@@ -160,24 +159,25 @@ export class OpeaEksCluster extends Construct {
         containers.forEach(container => {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
-            if (container) {
-                moduleOptions.containerName = container
-                namespace = cluster.addManifest(`${container}-namespace`, {
-                    apiVersion: "v1",
-                    kind: "Namespace",
-                    metadata: {
-                        name: container
-                    }
-                })
-            }
-            
-            const kb = new KubernetesModule(this.props.module, moduleOptions);
+
+            namespace = cluster.addManifest(`${container.name}-namespace`, {
+                apiVersion: "v1",
+                kind: "Namespace",
+                metadata: {
+                    name: container.name
+                }
+            })
+        
+            const kb = new KubernetesModule(this.props.module, {
+                container,
+                ...(this.props.moduleOptions || {})
+            });
             kb.assets.forEach(asset => {
-                if (container) asset.metadata.namespace = container;
+                asset.metadata.namespace = container.name;
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
-                const manifest = cluster.addManifest(`${container}-${asset.kind}-${asset.metadata.name}`, asset);
-                if (container) manifest.node.addDependency(namespace);
+                const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
+                manifest.node.addDependency(namespace);
             })
         });  
     }
