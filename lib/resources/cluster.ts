@@ -2,7 +2,7 @@ import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, Au
 import { Construct } from "constructs";
 import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
-import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, PrefixList, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
 import { Size, Stack } from "aws-cdk-lib";
 import { OpeaEksProps } from "../types";
@@ -10,6 +10,7 @@ import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 import { HuggingFaceToken } from "../constants";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
 import { KubernetesModule } from "../helpers/kubernetes-module";
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
@@ -54,6 +55,7 @@ export class OpeaEksCluster extends Construct {
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
         sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(5371))
+        sg1.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.allTcp());
         this.securityGroup = sg1;
         //TODO - add volume /mnt/opea-models
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
@@ -154,6 +156,29 @@ export class OpeaEksCluster extends Construct {
                 if (container) manifest.node.addDependency(namespace);
             })
         });  
+    }
 
+    getPrefixListId():string {
+        const cr = new AwsCustomResource(this, `${this.id}-pl-cr`, {
+            onUpdate: {
+                service: "EC2",
+                action: "describeManagedPrefixLists",
+                parameters: {
+                    Filters: [
+                        {
+                            Name: "prefix-list-name",
+                            Values: [`com.amazonaws.${Stack.of(this).region}.ec2-instance-connect`]
+                        }
+                    ]
+                },
+                physicalResourceId: PhysicalResourceId.fromResponse("PrefixLists.0.PrefixListId")
+            },
+            policy: AwsCustomResourcePolicy.fromSdkCalls({
+                resources: ["*"]
+            }),
+            installLatestAwsSdk: true
+        })
+
+        return cr.getResponseField("PrefixLists.0.PrefixListId");
     }
 }
