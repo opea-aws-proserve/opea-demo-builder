@@ -139,34 +139,12 @@ export class OpeaEksCluster extends Construct {
             }
         ]
 
-        let accessRole:Role | undefined;
-        if (process.env.PARTICIPANT_ASSUMED_ROLE_ARN) {
-            accessRole = new Role(this, `${this.id}-access-entry-role`, {
-                assumedBy: new ArnPrincipal(process.env.PARTICIPANT_ASSUMED_ROLE_ARN),
-                inlinePolicies: {
-                    eks: new PolicyDocument({
-                        statements: [
-                            new PolicyStatement({
-                                effect: Effect.ALLOW,
-                                actions: ["eks:*"],
-                                resources: ["*"]
-                            })
-                        ]
-                    })
-                }
-            });
-
-            accessRole.addManagedPolicy(ManagedPolicy.fromManagedPolicyName(this, "ws-default-policy", "ws-default-policy"));
-            accessRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("IAMReadOnlyAccess"));
-        } else accessRole = undefined;
-
         const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
         const addlPrincipals = process.env.OPEA_PRINCIPAL || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
         const principals = addlPrincipals.split(',').map(a => a.trim());
         principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-        if (accessRole) principals.unshift(accessRole.roleArn);
 
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
