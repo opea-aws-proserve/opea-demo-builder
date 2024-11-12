@@ -142,10 +142,8 @@ export class OpeaEksCluster extends Construct {
         const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
         const addlPrincipals = process.env.OPEA_PRINCIPAL || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
-        const assumedRoleNames = process.env.OPEA_ASSUMED_ROLE || "";
         const principals = addlPrincipals.split(',').map(a => a.trim());
         principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
-        principals.push(...(assumedRoleNames.split(",").map(c => `arn:aws:sts::${Stack.of(this).account}:assumed-role/${c.trim()}`)));
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
 
         principals.forEach((principal,index) => {
