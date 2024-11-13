@@ -18,6 +18,7 @@ export interface OpeaEksProps {
     nodeGroupDiskSize?:number
     containers:KubernetesModuleContainer[]
     moduleOptions?: KubernetesModuleOptions
+    defaultNamespace?:string
 }
 
 type RecursivePartial<T> = {
@@ -31,6 +32,7 @@ export interface ExampleModuleOptions {
 
 export interface KubernetesModuleContainer {
     name:string
+    namespace?: string
     overridesFile?: string
     overrides?: ManifestOverrides
 }

@@ -5,7 +5,7 @@ import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
 import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, PrefixList, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
 import { Fn, Size, Stack } from "aws-cdk-lib";
-import { OpeaEksProps } from "../types";
+import { KubernetesModuleContainer, OpeaEksProps } from "../types";
 import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 import { HuggingFaceToken } from "../constants";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
@@ -133,7 +133,10 @@ export class OpeaEksCluster extends Construct {
             {
                 accessScope: {
                     type: AccessScopeType.NAMESPACE,
-                    namespaces: containers.map(a => a.name),
+                    namespaces: containers.reduce((acc,a) => {
+                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name);
+                        return acc;
+                    }, ["default"] as string[]),
                 },
                 policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
             }
@@ -160,25 +163,27 @@ export class OpeaEksCluster extends Construct {
         containers.forEach(container => {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
-
-            namespace = cluster.addManifest(`${container.name}-namespace`, {
-                apiVersion: "v1",
-                kind: "Namespace",
-                metadata: {
-                    name: container.name
-                }
-            })
-        
+            const useDefaultNamespace = this.isDefaultNamespace(container);
+            if (!this.isDefaultNamespace(container)) {
+                namespace = cluster.addManifest(`${container.name}-namespace`, {
+                    apiVersion: "v1",
+                    kind: "Namespace",
+                    metadata: {
+                        name: container.namespace || container.name
+                    }
+                })
+            }
+            
             const kb = new KubernetesModule(this.props.module, {
                 container,
                 ...(this.props.moduleOptions || {})
             });
             kb.assets.forEach(asset => {
-                asset.metadata.namespace = container.name;
+                asset.metadata.namespace = this.getNamespaceName(container);
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
                 const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
-                manifest.node.addDependency(namespace);
+                if (!useDefaultNamespace) manifest.node.addDependency(namespace);
             })
         });  
     }
@@ -205,5 +210,14 @@ export class OpeaEksCluster extends Construct {
         })
 
         return cr.getResponseField("PrefixLists.0.PrefixListId");
+    }
+
+    protected isDefaultNamespace(container:KubernetesModuleContainer):boolean {
+        return !!(this.props.defaultNamespace && this.props.defaultNamespace.toLowerCase() === container.name.toLowerCase());
+    }
+
+    protected getNamespaceName(container:KubernetesModuleContainer): string {
+        if (this.isDefaultNamespace(container)) return 'default';
+        return container.namespace || container.name;
     }
 }

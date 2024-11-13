@@ -15,6 +15,7 @@ export class OpeaEksStack extends Stack {
 
     new OpeaEksCluster(this, "OpeaEksCluster", {
       module: 'ChatQnA',
+      defaultNamespace: "chatqna",
       containers: [
         {
           name:"chatqna",
@@ -22,7 +23,8 @@ export class OpeaEksStack extends Stack {
         },
         {
           name:"chatqna-guardrails",
-          overrides:defaultOverrides
+          overrides:defaultOverrides,
+          namespace: "guardrails"
         }
       ]
     });
