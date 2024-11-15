@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { OpeaEksStack } from '../lib/app/eks';
+import { OpeaEksStack } from '../lib/app/eks-stack';
 import { App } from 'aws-cdk-lib';
+import { OpeaGuardrailsStack } from '../lib/app/guardrails-stack';
+import { OpeaChatQnAStack } from '../lib/app/chatqna-stack';
 
 const app = new App();
 
@@ -13,4 +15,9 @@ const stackProps = {
 
 }
 
-new OpeaEksStack(app, 'OpeaEksStack', stackProps);
+const eks = new OpeaEksStack(app, 'OpeaEksStack', stackProps);
+
+const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster, stackProps);
+const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster, stackProps);
+chat.addDependency(eks);
+guardrails.addDependency(eks);

@@ -7,5 +7,7 @@ if [ "$STACK_OPERATION" == "delete" ]; then
     cdk destroy --force --all
 else
     cdk bootstrap
-    cdk deploy --require-approval never --all
+    cdk synth --quiet
+    aws s3 sync ./cdk.out/
+    cdk deploy --require-approval never OpeaEksStack
 fi
