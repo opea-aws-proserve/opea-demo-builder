@@ -9,54 +9,44 @@ import { tmpdir } from "os";
 
 export class KubernetesModule extends ExampleModule {
     kubernetesPath: string
-    assets: ManifestKind[]
+    assets: ManifestKind[] = []
     containerName:string
     constructor(moduleName:string, protected options:KubernetesModuleOptions) {
         super(moduleName);
-        const kubernetesPath = this.getKubernetesPath();
-        if (!kubernetesPath) throw new Error(`Module ${this.moduleName} does not support kubernetes yet`);
-        this.kubernetesPath = kubernetesPath;
-        const manifestPath = pathFinder(this.kubernetesPath, 'manifest');
-        if (manifestPath) {
-            const assets = readdirSync(manifestPath).reduce((acc,manifest) => {
-                if (manifest.endsWith('.yaml') || manifest.endsWith('.yml')) {
+        if (!options.skipPackagedManifests) {
+            const kubernetesPath = this.getKubernetesPath();
+            if (!kubernetesPath) throw new Error(`Module ${this.moduleName} does not support kubernetes yet`);
+            this.kubernetesPath = kubernetesPath;
+            const manifestPath = pathFinder(this.kubernetesPath, 'manifest');
+            if (manifestPath) {
+                const assets = readdirSync(manifestPath).reduce((acc,manifest) => {
                     const key = manifest.split('.')[0].replace(/-/g, '_');
                     const fullpath = join(manifestPath, manifest);
-                    const text = readFileSync(fullpath).toString('utf-8');
-                    acc[key] = loadAll(text, undefined, {
-                        json:true,
-                        schema: JSON_SCHEMA,
-                        filename: fullpath
-                    });
-                    writeFileSync("a.json",JSON.stringify(acc[key]));
-                }
-                return acc;
-            }, {} as Record<string,any>);
-            if (options.container.name) {
-                const keys = Object.keys(assets);
-                const containerKey = keys.find(containerName => (new RegExp((options.container.name as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
-                if (containerKey) this.containerName = containerKey;
-                else this.containerName = keys[0];
-            } else this.containerName = Object.keys(assets)[0];
-            this.assets = assets[this.containerName];
-            let overrides:ManifestOverrides = {};
-
-            if (options.container.overridesFile && existsSync(options.container.overridesFile)) {
-                const file = readFileSync(options.container.overridesFile).toString('utf-8');
-                if (options.container.overridesFile.endsWith('.yaml') || options.container.overridesFile.endsWith('.yml')) {
-
-                    overrides = loadAll(file, undefined, {
-                        json:true,
-                        schema: JSON_SCHEMA,
-                        filename: options.container.overridesFile
-                    }) as unknown as ManifestOverrides;
-                } else if (options.container.overridesFile.endsWith('.json')) {
-                    overrides = JSON.parse(file) as ManifestOverrides;
-                }
+                    const content = this.parseFile(fullpath);
+                    if (Object.keys(content).length) acc[key] = content
+                    return acc;
+                }, {} as Record<string,any>);
+                if (options.container.name) {
+                    const keys = Object.keys(assets);
+                    const containerKey = keys.find(containerName => (new RegExp((options.container.name as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
+                    if (containerKey) this.containerName = containerKey;
+                    else this.containerName = keys[0];
+                } else this.containerName = Object.keys(assets)[0];
+                this.assets = assets[this.containerName];
             }
-            if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
-            this.parseOverrides(overrides);
         }
+        if (options.container.manifestFiles?.length) {
+            options.container.manifestFiles.forEach(mf => {
+                const fileContent = this.parseFile(mf);
+                if (fileContent) this.assets.push(...fileContent as ManifestKind[]);
+            })
+        }
+        if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
+
+        let overrides:ManifestOverrides = this.parseFile(options.container.overridesFile as string) || {}
+        if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
+        this.parseOverrides(overrides);
+
 
         if (this.useContainerizedUi) {
             // TODO: Add logic for containerized UI after full docker support is added
@@ -68,6 +58,25 @@ export class KubernetesModule extends ExampleModule {
         return this.options.chartAssetName ? `${this.options.chartAssetName}${ext}` : 
             `${this.moduleName}-${this.containerName}${ext}`
         ;
+    }
+
+    parseFile(filepath:string | Record<string,any>): Record<string,any> {
+        if (typeof filepath === 'string') {
+            if (filepath && existsSync(filepath)) {
+                const file = readFileSync(filepath).toString('utf-8');
+                if (filepath.endsWith('.yaml') || filepath.endsWith('.yml')) {
+
+                    return loadAll(file, undefined, {
+                        json:true,
+                        schema: JSON_SCHEMA,
+                        filename: filepath
+                    }) as unknown as ManifestOverrides;
+                } else if (filepath.endsWith('.json')) {
+                    return JSON.parse(file) as ManifestOverrides;
+                } else return {}
+            }
+            return {}
+        } else return filepath;
     }
 
     writeYaml(dir?: string, yml?:string): string {return this.writeYml(yml, dir)}
@@ -112,6 +121,5 @@ export class KubernetesModule extends ExampleModule {
                 this.assets.splice(chartIndex, 1, replacement as ManifestKind);
             }
         });
-
     }
 }

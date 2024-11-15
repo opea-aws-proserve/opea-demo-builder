@@ -1,10 +1,13 @@
 import { InstanceType } from "aws-cdk-lib/aws-ec2"
+import { ICluster } from "aws-cdk-lib/aws-ecs"
 import { ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
     module: string
     modelId?:string
+    containers?:KubernetesModuleContainer[]
+
    // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
@@ -16,7 +19,6 @@ export interface OpeaEksProps {
     additionalInstanceTypes?: InstanceType[]
     principal?:string
     nodeGroupDiskSize?:number
-    containers:KubernetesModuleContainer[]
     moduleOptions?: KubernetesModuleOptions
     defaultNamespace?:string
 }
@@ -35,10 +37,13 @@ export interface KubernetesModuleContainer {
     namespace?: string
     overridesFile?: string
     overrides?: ManifestOverrides
+    manifestFiles?:string[]
+    manifests?: ManifestKind[]
 }
 
 export interface KubernetesModuleOptions extends ExampleModuleOptions {
     container:KubernetesModuleContainer
+    skipPackagedManifests?:boolean
     chartAssetName?:string
     useYamlExtension?:boolean
   //  manifestOptions?: OpeaManifestOptions
