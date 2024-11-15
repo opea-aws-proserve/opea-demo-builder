@@ -4,9 +4,9 @@ metadata:
   name: guardrails-ingress
   namespace: default
   labels:
-    app.kubernetes.io/name: chatqna-ingress
+    app.kubernetes.io/name: guardrails-ingress
   annotations:
-    alb.ingress.kubernetes.io/load-balancer-name: chatqna-ingress
+    alb.ingress.kubernetes.io/load-balancer-name: guardrails-ingress
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/healthcheck-path: /
