@@ -17,7 +17,7 @@ const stackProps = {
 
 const eks = new OpeaEksStack(app, 'OpeaEksStack', stackProps);
 
-const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster.kubectlRole!, stackProps);
-const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster.kubectlRole!, stackProps);
+const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster, stackProps);
+const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster, stackProps);
 chat.addDependency(eks);
 guardrails.addDependency(eks);
