@@ -16,15 +16,13 @@ export class OpeaGuardrailsStack extends Stack {
       })
     });
     
-    const manifestFiles = [join(__dirname, 'manifests/chatqna-ingress.yml')];
     const imported = new ImportedCluster(this, `guardrails-imported`, cluster);
 
     addManifests('ChatQnA', imported.root, [
       {
         name:"chatqna-guardrails",
         overrides:defaultOverrides,
-        namespace: "guardrails",
-        manifestFiles
+        namespace: "guardrails"
       }
     ]);
   }
