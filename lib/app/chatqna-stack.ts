@@ -5,9 +5,10 @@ import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
 import { addManifests } from '../util';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ImportedCluster } from '../resources/imported';
 
 export class OpeaChatQnAStack extends Stack {
-  constructor(scope: Construct, id: string, kubectlRole:IRole, props?: StackProps) {
+  constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
@@ -15,13 +16,9 @@ export class OpeaChatQnAStack extends Stack {
       })
     });
     
-    const cluster = Cluster.fromClusterAttributes(this, 'opea-guardrails-cluster', {
-      clusterName: `opea-eks-cluster`,
-      kubectlRoleArn: kubectlRole.roleArn
-    });
     const manifestFiles = [join(__dirname, 'manifests/chatqna-ingress.yml')];
-
-    addManifests('ChatQnA', cluster, [
+    const imported = new ImportedCluster(this, `chatqna-imported`, cluster);
+    addManifests('ChatQnA', imported.root, [
       {
         name:"chatqna",
         overrides:defaultOverrides,
