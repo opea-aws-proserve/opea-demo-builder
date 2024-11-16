@@ -36,7 +36,7 @@ export class KubernetesModule extends ExampleModule {
             }
         }
         if (options.container.manifestFiles?.length) {
-            options.container.manifestFiles.forEach(mf => {
+            options.container.manifestFiles.forEach((mf:string) => {
                 const fileContent = this.parseFile(mf);
                 if (fileContent) this.assets.push(...fileContent as ManifestKind[]);
             })
@@ -44,6 +44,7 @@ export class KubernetesModule extends ExampleModule {
         if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
 
         let overrides:ManifestOverrides = this.parseFile(options.container.overridesFile as string) || {}
+        if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
         if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
         this.parseOverrides(overrides);
 
