@@ -23,10 +23,3 @@ spec:
                 name: chatqna-nginx
                 port:
                   number: 80
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: chatqna-nginx-ssl
-                port:
-                  number: 443
