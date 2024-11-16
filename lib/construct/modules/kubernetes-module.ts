@@ -3,7 +3,7 @@ import { pathFinder } from "../util";
 import { ExampleModule } from "./example-module";
 import { join } from "path";
 import { DEFAULT_SCHEMA, dump, JSON_SCHEMA, loadAll } from "js-yaml";
-import { ManifestKind, ManifestOverrides, KubernetesModuleOptions } from "../types";
+import { ManifestKind, ManifestOverrides, KubernetesModuleOptions } from "../util/types";
 import {merge} from 'lodash'
 import { tmpdir } from "os";
 
@@ -37,8 +37,12 @@ export class KubernetesModule extends ExampleModule {
         }
         if (options.container.manifestFiles?.length) {
             options.container.manifestFiles.forEach((mf:string) => {
-                const fileContent = this.parseFile(mf);
-                if (fileContent) this.assets.push(...fileContent as ManifestKind[]);
+                let fileContent = this.parseFile(mf);
+
+                if (Object.keys(fileContent).length) { 
+                    if (!Array.isArray(fileContent)) fileContent = [fileContent]
+                    this.assets.push(...fileContent as ManifestKind[]);
+                }
             })
         }
         if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
@@ -61,7 +65,7 @@ export class KubernetesModule extends ExampleModule {
         ;
     }
 
-    parseFile(filepath:string | Record<string,any>): Record<string,any> {
+    private parseFile(filepath:string | Record<string,any>): Record<string,any> {
         if (typeof filepath === 'string') {
             if (filepath && existsSync(filepath)) {
                 const file = readFileSync(filepath).toString('utf-8');
