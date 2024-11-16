@@ -6,6 +6,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "copy-repo": "node ./lib/app/bin/copy-repo.ts",
     "postinstall": "rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.13",
     "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ts-node": "^10.9.2"
   }
 }
