@@ -14,7 +14,7 @@ else
     export WORKSHOP_BUCKET=$(aws ssm get-parameter --name workshop-bucket --query Parameter.Value --output text)
     aws s3 sync "./cdk.out" "s3://$WORKSHOP_BUCKET/cloudformation"
     npm run copy-repo;
-    zip -r workshop.zip ./workshop/
+    zip -r ./workshop.zip ./workshop/
     aws s3 sync "./workshop.zip" "s3://$WORKSHOP_BUCKET/opea-workshop-builder.zip"
 
 fi
