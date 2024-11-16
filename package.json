@@ -27,6 +27,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.13",
     "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ts-node": "^10.9.2"
   }
 }

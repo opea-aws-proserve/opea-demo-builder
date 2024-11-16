@@ -1,4 +1,4 @@
-# OPEA Demo Builder
+# OPEA Workshop Builder
 
 This is a CDK library that will build the constructs that make up the Opea CDK application. This package will allow users to select any module from Opea's GenAIExamples that has Kubernetes support (support for docker compose can be added in the future), and create an EKS cluster using any combination of components.
 
