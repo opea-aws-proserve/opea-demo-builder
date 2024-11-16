@@ -1,4 +1,4 @@
-import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
 import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -21,6 +21,10 @@ export class OpeaEksStack extends Stack {
       parameterName: 'workshop-bucket',
       stringValue: bucket.bucketName
     });
+    new CfnOutput(this, "bucket-output", {
+      exportName: "workshop-bucket",
+      value: bucket.bucketName
+    })
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
       module: 'ChatQnA',

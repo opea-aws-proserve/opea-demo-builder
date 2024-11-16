@@ -12,7 +12,9 @@ else
    # cdk deploy --require-approval never OpeaEksStack
     cdk deploy --require-approval never --all
     export WORKSHOP_BUCKET=$(aws ssm get-parameter --name workshop-bucket --query Parameter.Value --output text)
-    aws s3 sync "." "s3://$WORKSHOP_BUCKET/opea-demo-builder"
-    aws s3 sync "./cdk.out/OpeaChatQnAStack.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaChatQnAStack.json"
-    aws s3 sync "./cdk.out/OpeaGuardrailsStack.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaGuardrailsStack.json"
+    npm run copy-repo;
+   # aws s3 sync "./workshop/" "s3://$WORKSHOP_BUCKET/opea-workshop-builder"
+    zip -r workshop.zip ./workshop/
+    aws s3 sync "./workshop.zip" "s3://$WORKSHOP_BUCKET/opea-workshop-builder.zip"
+
 fi
