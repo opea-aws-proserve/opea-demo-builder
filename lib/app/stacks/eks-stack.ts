@@ -1,6 +1,7 @@
 import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
 import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
+import { OpeaDevelopmentEnvironment } from '../resources/environment';
 
 export class OpeaEksStack extends Stack {
   root:OpeaEksCluster;
@@ -13,6 +14,8 @@ export class OpeaEksStack extends Stack {
       })
     });
     
+    new OpeaDevelopmentEnvironment(this, "OpeaDevEnv");
+
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
       module: 'ChatQnA',
     });
