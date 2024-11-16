@@ -26,10 +26,7 @@ type RecursivePartial<T> = {
     [P in keyof T]?: RecursivePartial<T[P]>;
 };
 
-export interface ExampleModuleOptions {
-    uiType?:string
-    serverlessUi?:boolean
-}
+export interface ExampleModuleOptions {}
 
 export interface KubernetesModuleContainer {
     name:string
@@ -61,6 +58,7 @@ export interface OpeaManifestOptions {
     containers?: ManifestContainer[]
     volumes?: ManifestVolume[]
     data?: AnyObject
+    annotations?:Record<string,string>
 }
 
 export interface ManifestTemplate<Kind extends string> {
@@ -101,6 +99,7 @@ export interface ManifestMetadata {
     name: string
     labels: StringObject
     namespace?:string
+    annotations?:Record<string,string>
 }
 
 export interface ManifestSpec {

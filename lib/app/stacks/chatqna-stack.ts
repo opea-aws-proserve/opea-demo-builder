@@ -1,6 +1,6 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { defaultOverrides } from '../../construct/constants';
+import { defaultOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
 import { addManifests } from '../../construct/util';
@@ -14,8 +14,10 @@ export class OpeaChatQnAStack extends Stack {
         generateBootstrapVersionRule: false
       })
     });
-    
-    const manifestFiles = [join(__dirname, 'manifests/chatqna-ingress.yml')];
+    if (!HuggingFaceToken) {
+      throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
+    }
+    const manifestFiles = [join(__dirname, '../manifests/chatqna-ingress.yml')];
     const imported = new ImportedCluster(this, `chatqna-imported`, cluster);
     addManifests('ChatQnA', imported.root, [
       {

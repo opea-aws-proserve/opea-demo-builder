@@ -51,11 +51,6 @@ export class KubernetesModule extends ExampleModule {
         if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
         if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
         this.parseOverrides(overrides);
-
-
-        if (this.useContainerizedUi) {
-            // TODO: Add logic for containerized UI after full docker support is added
-        }
     }
 
     get filename(): string {

@@ -7,7 +7,6 @@ import * as Constants from '../constants.json';
 import { Size, Stack } from "aws-cdk-lib";
 import { KubernetesModuleContainer, OpeaEksProps } from "../util/types";
 import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
-import { HuggingFaceToken } from "../constants";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
 import { KubernetesModule } from "../modules/kubernetes-module";
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
@@ -88,18 +87,12 @@ export class OpeaEksCluster extends Construct {
             ...(props?.clusterProps || {}),
             version: KubernetesVersion.V1_31,
             clusterHandlerEnvironment: {
-                HUGGINGFACEHUB_API_TOKEN: HuggingFaceToken,
-            //    host_ip: "",
-            //    no_proxy: "localhost",
                 ...(props?.environmentVariables || {}), 
                 ...(props?.clusterProps?.clusterHandlerEnvironment || {})
             },
             clusterLogging: getClusterLogLevel(props?.logLevel, props?.clusterProps?.clusterLogging),
             clusterName: `opea-eks-cluster`,
             kubectlEnvironment: {
-                HUGGINGFACEHUB_API_TOKEN: HuggingFaceToken,
-                //host_ip: "",
-                //no_proxy: "localhost",
                 ...(props?.environmentVariables || {}),
                 ...(props?.clusterProps?.kubectlEnvironment || {})
             },
@@ -151,7 +144,7 @@ export class OpeaEksCluster extends Construct {
         if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
 
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-
+        if (!principals.length) throw new Error('Please add at least one principal to AccessEntry in order to access the EKS cluster');
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,
