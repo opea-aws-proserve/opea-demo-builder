@@ -1,6 +1,6 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { defaultOverrides } from '../../construct/constants';
+import { defaultOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
 import { addManifests } from '../../construct/util';
@@ -17,7 +17,9 @@ export class OpeaGuardrailsStack extends Stack {
     
     const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
     const imported = new ImportedCluster(this, `guardrails-imported`, cluster);
-
+    if (!HuggingFaceToken) {
+      throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
+    }
     addManifests('ChatQnA', imported.root, [
       {
         name:"chatqna-guardrails",
