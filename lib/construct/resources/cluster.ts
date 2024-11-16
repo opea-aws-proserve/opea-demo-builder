@@ -1,4 +1,4 @@
-import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, ICluster, KubernetesManifest, KubernetesVersion } from "aws-cdk-lib/aws-eks";
+import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, ICluster, KubernetesManifest, KubernetesVersion, NodegroupAmiType } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
 import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
@@ -103,57 +103,14 @@ export class OpeaEksCluster extends Construct {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
+            amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
             diskSize: props.nodeGroupDiskSize || 100,
             nodegroupName: `${id}-nodegroup`,
-            remoteAccess: process.env.KeyPair ? {
-                sshKeyName: process.env.KeyPair
+            remoteAccess: process.env.EC2_SSH_KEYPAIR ? {
+                sshKeyName: process.env.EC2_SSH_KEYPAIR,
+                sourceSecurityGroups: [this.securityGroup]
             } : undefined
         });
-
-        this.updateCluster(this.cluster);
-    }
-    
-    updateCluster(cluster:ICluster) {
-        const containers = this.props.containers?.length ? this.props.containers : [];
-        const accessPolicies = [
-            {
-                accessScope: {
-                    type: AccessScopeType.CLUSTER
-                },
-                policy: AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY.policyArn
-            },
-            {
-                accessScope: {
-                    type: AccessScopeType.NAMESPACE,
-                    namespaces: containers.reduce((acc,a) => {
-                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name);
-                        return acc;
-                    }, ["default"] as string[]),
-                },
-                policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
-            }
-        ]
-
-        const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
-        const addlPrincipals = process.env.OPEA_ROLE_ARN || "";
-        const roleNames = process.env.OPEA_ROLE_NAME || "";
-        const users = process.env.OPEA_USERS || "";
-        let principals = addlPrincipals.split(',').map(a => a.trim());
-        if (!principals[0])principals = [];
-        if (roleNames) principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
-        if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
-
-        if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-        if (!principals.length) throw new Error('Please add at least one principal to AccessEntry in order to access the EKS cluster');
-        principals.forEach((principal,index) => {
-            new AccessEntry(this, `${this.id}-access-entry-${index}`, {
-                cluster,
-                accessEntryType: "STANDARD" as any,
-                principal,
-                accessPolicies
-            });
-        });
-        this.addManifests(cluster,...containers);
     }
 
     getPrefixListId():string {
