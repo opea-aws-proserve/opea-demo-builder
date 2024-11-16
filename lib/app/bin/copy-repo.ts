@@ -14,7 +14,7 @@ mkdirSync(root);
 cpSync(join(base, 'lib'), join(root, 'lib'), {recursive:true});
 cpSync(join(base, 'assets/genai-examples/ChatQnA'), join(root, 'assets/genai-examples/ChatQnA'), {recursive:true});
 
-["LICENSE", ".gitignore", "cdk.json"].forEach(a => copyFileSync(join(base, a), join(root, a)));
+["LICENSE", ".gitignore", "cdk.json", "tsconfig.json"].forEach(a => copyFileSync(join(base, a), join(root, a)));
 copyFileSync(join(base, "README.workshop.md"), join(root, "README.md"));
 pkg.name = "opea-workshop-builder";
 pkg.bin = {
