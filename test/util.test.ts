@@ -2,8 +2,8 @@
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
 import { join } from "path";
-import { examplePath } from "../lib/helpers/example-manager";
-import { getVersionNumber, getLatestKVersion, capitalize, pathFinder } from "../lib/util";
+import { examplePath } from "../lib/construct/modules/example-manager";
+import { getVersionNumber, getLatestKVersion, capitalize, pathFinder } from "../lib/construct/util";
 // example test. To run these tests, uncomment this file along with the
 // example resource in lib/util-stack.ts
 // test('SQS Queue Created', () => {
