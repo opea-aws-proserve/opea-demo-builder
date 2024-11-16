@@ -14,7 +14,5 @@ else
     export WORKSHOP_BUCKET=$(aws ssm get-parameter --name workshop-bucket --query Parameter.Value --output text)
     aws s3 sync "." "s3://$WORKSHOP_BUCKET/opea-demo-builder"
     aws s3 sync "./cdk.out/OpeaChatQnAStack.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaChatQnAStack.json"
-    aws s3 sync "./cdk.out/OpeaChatQnAStackOpeaChatQnAStackopeaguardrailsclusterEE027AE5KubectlProvider310940F9.nested.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaChatQnAStackNestedProvider.json"
     aws s3 sync "./cdk.out/OpeaGuardrailsStack.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaGuardrailsStack.json"
-    aws s3 sync "./cdk.out/OpeaGuardrailsStackOpeaGuardrailsStackopeaguardrailscluster2D68FC85KubectlProvider7452D8A5.nested.template.json" "s3://$WORKSHOP_BUCKET/cloudformation/OpeaGuardrailsStackNestedProvider.json"
 fi
