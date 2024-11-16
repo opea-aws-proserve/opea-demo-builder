@@ -1,5 +1,5 @@
 import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
-import { OpeaEksCluster } from '../resources/cluster';
+import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
 
 export class OpeaEksStack extends Stack {

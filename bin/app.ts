@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { OpeaEksStack } from '../lib/app/eks-stack';
+import { OpeaEksStack } from '../lib/app/stacks/eks-stack';
 import { App } from 'aws-cdk-lib';
-import { OpeaGuardrailsStack } from '../lib/app/guardrails-stack';
-import { OpeaChatQnAStack } from '../lib/app/chatqna-stack';
+import { OpeaGuardrailsStack } from '../lib/app/stacks/guardrails-stack';
+import { OpeaChatQnAStack } from '../lib/app/stacks/chatqna-stack';
 
 const app = new App();
 

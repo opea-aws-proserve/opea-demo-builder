@@ -1,5 +1,4 @@
 import { InstanceType } from "aws-cdk-lib/aws-ec2"
-import { ICluster } from "aws-cdk-lib/aws-ecs"
 import { ClusterProps } from "aws-cdk-lib/aws-eks"
 
 

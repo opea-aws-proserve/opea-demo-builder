@@ -2,8 +2,8 @@ import { AlbControllerVersion, ClusterLoggingTypes, ICluster, KubernetesManifest
 import { lstatSync, readdirSync } from "fs";
 import { join } from "path";
 import { KubernetesModuleContainer, KubernetesModuleOptions } from "./types";
-import { OpeaEksCluster } from "./resources/cluster";
-import { KubernetesModule } from "./helpers/kubernetes-module";
+import { OpeaEksCluster } from "../resources/cluster";
+import { KubernetesModule } from "../modules/kubernetes-module";
 
 
 export function getVersionNumber(vString:string | number): number {

@@ -1,11 +1,10 @@
-import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { defaultOverrides } from '../constants';
+import { defaultOverrides } from '../../construct/constants';
 import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
-import { addManifests } from '../util';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ImportedCluster } from '../resources/imported';
+import { addManifests } from '../../construct/util';
+import { ImportedCluster } from '../../construct/resources/imported';
 
 export class OpeaChatQnAStack extends Stack {
   constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {

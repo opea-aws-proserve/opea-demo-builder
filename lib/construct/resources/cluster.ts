@@ -5,11 +5,11 @@ import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
 import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
 import { Size, Stack } from "aws-cdk-lib";
-import { KubernetesModuleContainer, OpeaEksProps } from "../types";
+import { KubernetesModuleContainer, OpeaEksProps } from "../util/types";
 import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 import { HuggingFaceToken } from "../constants";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
-import { KubernetesModule } from "../helpers/kubernetes-module";
+import { KubernetesModule } from "../modules/kubernetes-module";
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
 
 export class OpeaEksCluster extends Construct {

@@ -1,31 +1,34 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
-import { KubernetesModule } from "../lib/helpers/kubernetes-module";
-import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/types";
+import { KubernetesModule } from "../lib/construct/modules/kubernetes-module";
+import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/construct/types";
 
 describe("Module functions", () => {
     it("Check assets", () => {
        
        // writeFileSync('x.json',JSON.stringify(new KubernetesModule('ChatQnA').assets, null, '\t'))
        const kb = new KubernetesModule('ChatQnA', {
-        overrides: {
-            "chatqna-data-prep-config": {
-                "metadata": {
-                    "labels": {
-                       "helm.sh/chart": "data-prep-1.0.1",
-                        "app.kubernetes.io/version": "v1.1"
-                    }
-                }
-            },
-            "chatqna-teirerank": {
-                "metadata": {
-                    "labels": {
-                        "app.kubernetes.io/version": "cpu-1.6"
+        container: {
+            name: "chatqna",
+            overrides: {
+                "chatqna-data-prep-config": {
+                    "metadata": {
+                        "labels": {
+                        "helm.sh/chart": "data-prep-1.0.1",
+                            "app.kubernetes.io/version": "v1.1"
+                        }
                     }
                 },
-                "spec": {
-                    "ports": [{targetPort:2083}]
+                "chatqna-teirerank": {
+                    "metadata": {
+                        "labels": {
+                            "app.kubernetes.io/version": "cpu-1.6"
+                        }
+                    },
+                    "spec": {
+                        "ports": [{targetPort:2083}]
+                    }
                 }
             }
         }
@@ -40,7 +43,23 @@ describe("Module functions", () => {
 
 describe("Tokens", () => {
     it("Token is replaced", () => {
-        const kb = new KubernetesModule('ChatQnA');
+        const kb = new KubernetesModule('ChatQnA',  {
+            container: {
+                name:'chatqna',
+                overrides: {
+                    "chatqna-retriever-usvc-config": {
+                        data: {
+                            HUGGINGFACEHUB_API_TOKEN: "token"
+                        }
+                    },
+                    "chatqna-data-prep-config": {
+                        data: {
+                            HUGGINGFACEHUB_API_TOKEN: "token"
+                        }
+                    }
+                }
+            }
+        });
         const retriever = kb.assets.find(n => n.metadata.name === "chatqna-retriever-usvc-config");
         expect((retriever as ManifestTemplateConfigMap).data["HUGGINGFACEHUB_API_TOKEN"]).toEqual("token");
         const prep = kb.assets.find(n => n.metadata.name === "chatqna-data-prep-config");

@@ -1,7 +1,7 @@
 import { lstatSync, readdirSync } from "fs"
 import { join } from "path"
 
-export const examplePath = join(__dirname, '../../assets', 'genai-examples');
+export const examplePath = join(__dirname, '../../../assets', 'genai-examples');
 
 export class ExampleManager {
 
