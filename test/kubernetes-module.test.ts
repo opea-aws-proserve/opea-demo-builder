@@ -2,7 +2,7 @@
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
 import { KubernetesModule } from "../lib/construct/modules/kubernetes-module";
-import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/construct/types";
+import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/construct/util/types";
 
 describe("Module functions", () => {
     it("Check assets", () => {

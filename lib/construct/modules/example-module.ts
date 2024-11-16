@@ -2,7 +2,7 @@ import { join } from "path";
 import { ExampleManager, examplePath } from "./example-manager";
 import { pathFinder } from "../util";
 import { existsSync } from "fs";
-import { ExampleModuleOptions } from "../types";
+import { ExampleModuleOptions } from "../util/types";
 
 export class ExampleModule {
     readonly moduleName:string;
