@@ -27,6 +27,7 @@ export class KubernetesModule extends ExampleModule {
                     return acc;
                 }, {} as Record<string,any>);
                 if (options.container.name) {
+                    
                     const keys = Object.keys(assets);
                     const containerKey = keys.find(containerName => (new RegExp((options.container.name as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
                     if (containerKey) this.containerName = containerKey;

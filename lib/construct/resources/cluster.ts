@@ -13,6 +13,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
+    kubernetesModules: KubernetesModule[] = [];
     vpc:IVpc;
     securityGroup: SecurityGroup
     module:string
@@ -136,12 +137,12 @@ export class OpeaEksCluster extends Construct {
     }
 
     isDefaultNamespace(container:KubernetesModuleContainer):boolean {
-        return !!(this.props.defaultNamespace && this.props.defaultNamespace.toLowerCase() === container.name.toLowerCase());
+        return !!(this.props.defaultNamespace && this.props.defaultNamespace.toLowerCase() === (container.name || 'default').toLowerCase());
     }
 
     getNamespaceName(container:KubernetesModuleContainer): string {
         if (this.isDefaultNamespace(container)) return 'default';
-        return container.namespace || container.name;
+        return container.namespace || container.name || 'default';
     }
 
     addManifests(...containers:KubernetesModuleContainer[]) {
@@ -154,7 +155,7 @@ export class OpeaEksCluster extends Construct {
                     apiVersion: "v1",
                     kind: "Namespace",
                     metadata: {
-                        name: container.namespace || container.name
+                        name: container.namespace || container.name || 'default'
                     }
                 })
             }
@@ -164,7 +165,7 @@ export class OpeaEksCluster extends Construct {
                 ...(this.props.moduleOptions || {}),
                 skipPackagedManifests: this.props.skipPackagedManifests
             });
-
+            this.kubernetesModules.push(kb);
             kb.assets.forEach(asset => {
                 asset.metadata.namespace = this.getNamespaceName(container);
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
@@ -188,7 +189,7 @@ export class OpeaEksCluster extends Construct {
                 accessScope: {
                     type: AccessScopeType.NAMESPACE,
                     namespaces: containers.reduce((acc,a) => {
-                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name);
+                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name || 'default');
                         return acc;
                     }, ["default"] as string[]),
                 },

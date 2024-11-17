@@ -29,7 +29,10 @@ export interface OpeaEksProps {
 export interface OpeaManifestProps {
     cluster:Cluster
     moduleName:string
-    containers:KubernetesModuleContainer[]
+    containers?:KubernetesModuleContainer[]
+    manifestFiles?:string[]
+    manifests?: ManifestKind[]
+    namespace?:string
     skipPackagedManifests?:boolean
 }
 
@@ -40,7 +43,7 @@ type RecursivePartial<T> = {
 export interface ExampleModuleOptions {}
 
 export interface KubernetesModuleContainer {
-    name:string
+    name?:string
     namespace?: string
     overridesFile?: string
     overrides?: ManifestOverrides

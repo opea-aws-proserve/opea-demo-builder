@@ -1,10 +1,12 @@
 import { Cluster, ICluster, KubectlProvider, KubernetesManifest } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
-import { OpeaManifestProps } from "../util/types";
+import { KubernetesModuleContainer, OpeaManifestProps } from "../util/types";
 import { KubernetesModule } from "../modules/kubernetes-module";
 
 export class ImportedCluster extends Construct {
     root:ICluster
+    kubernetesModules: KubernetesModule[] = [];
+
     constructor(
         scope:Construct, 
         id:string, 
@@ -30,8 +32,21 @@ export class ImportedCluster extends Construct {
         this.addManifests();
     }
 
-    addManifests() {
-        (this.props.containers || []).forEach(container => {
+    get containers(): KubernetesModuleContainer[] {
+        return this.props.containers || [];
+    }
+
+    protected addManifests() {
+        if (this.props.manifestFiles || this.props.manifests) {
+            const genericContainer = {
+                namespace: this.props.namespace,
+                manifests:this.props.manifests,
+                manifestFiles:this.props.manifestFiles
+            }
+            if (!this.props.containers) this.props.containers = [];
+            this.props.containers.push(genericContainer);
+        }
+        this.containers.forEach(container => {
             const cluster = this.root;
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
@@ -49,7 +64,7 @@ export class ImportedCluster extends Construct {
                 container,
                 ...({skipPackagedManifests:this.props.skipPackagedManifests})
             });
-    
+            this.kubernetesModules.push(kb);
             kb.assets.forEach(asset => {
                 asset.metadata.namespace = container.namespace || 'default';
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
@@ -59,6 +74,5 @@ export class ImportedCluster extends Construct {
             })
         });  
     }
-    
-    
+
 }
