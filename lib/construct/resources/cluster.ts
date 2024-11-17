@@ -2,7 +2,7 @@ import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, Au
 import { Construct } from "constructs";
 import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
-import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, IVpc, KeyPair, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
 import { Size, Stack } from "aws-cdk-lib";
 import { KubernetesModuleContainer, OpeaEksProps } from "../util/types";
@@ -13,7 +13,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
-    vpc:Vpc;
+    vpc:IVpc;
     securityGroup: SecurityGroup
     module:string
 
@@ -25,18 +25,12 @@ export class OpeaEksCluster extends Construct {
         public props: OpeaEksProps
     ) {
         super(scope, id);
-        this.vpc = new Vpc(this, "OpeaVpc", {
+        this.vpc = props.vpc ? props.vpc : new Vpc(this, "OpeaVpc", {
             subnetConfiguration: [
                 {
                     name: 'publicSubnet',
                     subnetType: SubnetType.PUBLIC,
-                // cidrMask: 24 // Defines the size of each subnet as a smaller part of the VPC CIDR block
                 },
-            /* {
-                    name: 'privateSubnet',
-                    subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-                    cidrMask: 24
-                },*/
             ],   
             flowLogs: {
                 BriefingFlowLogs: {
@@ -70,6 +64,7 @@ export class OpeaEksCluster extends Construct {
         this.securityGroup.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.tcp(22));
 
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
+        const keyPair = process.env.EC2_SSH_KEYPAIR || (new KeyPair(this, `${id}-keypair`)).keyPairName;
         this.cluster = new Cluster(this, `opea-eks-cluster`, {            
             kubectlLayer: new KubectlV31Layer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
@@ -107,11 +102,12 @@ export class OpeaEksCluster extends Construct {
             amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
             diskSize: props.nodeGroupDiskSize || 100,
             nodegroupName: `${id}-nodegroup`,
-            remoteAccess: process.env.EC2_SSH_KEYPAIR ? {
-                sshKeyName: process.env.EC2_SSH_KEYPAIR,
+            remoteAccess: props.skipKeyPair ? undefined : {
+                sshKeyName: keyPair,
                 sourceSecurityGroups: [this.securityGroup]
-            } : undefined
+            }
         });
+        
         this.addAccessEntry(this.cluster);
     }
 
