@@ -2,6 +2,7 @@
   "name": "opea-demo-builder",
   "version": "0.1.1",
   "main": "lib/index.ts",
+  "types": "lib/types.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
