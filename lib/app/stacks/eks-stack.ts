@@ -16,9 +16,9 @@ export class OpeaEksStack extends Stack {
     });
 
     const bucket = new Bucket(this, "bucket");
-
+    const parameterName = process.env.IS_WORKSHOP === "workshop" ? "workshop-bucket" : "template-bucket";
     new StringParameter(this, "bucket-param", {
-      parameterName: 'workshop-bucket',
+      parameterName,
       stringValue: bucket.bucketName
     });
     new StringParameter(this, "command-param", {
