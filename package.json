@@ -7,7 +7,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "copy-repo": "ts-node ./lib/app/bin/copy-repo.ts",
-    "postinstall": "if test \"$PULL_ASSETS\" = \"PULL\" ; then rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples ; else npm run build ; fi"
+    "preinstall": "if test \"$PULL_ASSETS\" = \"PULL\" ; then rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples ; fi",
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
