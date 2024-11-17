@@ -28,7 +28,7 @@ export class OpeaEksStack extends Stack {
     // get repo command `aws s3 sync $(aws ssm get-parameter --name get-repo-command-args --query Parameter.Value --output text)`
     new CfnOutput(this, "bucket-output", {
       exportName: "get-repo-command",
-      value: `aws s3 sync s3://${bucket.bucketName}/opea-workshop-builder.zip ./opea-workshop-builder.zip`
+      value: `aws s3 cp s3://${bucket.bucketName}/opea-workshop-builder.zip ./opea-workshop-builder.zip`
     })
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
