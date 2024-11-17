@@ -1,4 +1,4 @@
-import { InstanceType } from "aws-cdk-lib/aws-ec2"
+import { InstanceType, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2"
 import { ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
@@ -11,6 +11,8 @@ export interface OpeaEksProps {
     clusterName?: string
     kubernetesVersion?: string
     albVersion?: string
+    subnets?: SubnetSelection[]
+    securityGroup?: SecurityGroup
     clusterProps?: Partial<ClusterProps>
     environmentVariables?: StringObject
     logLevel?: string

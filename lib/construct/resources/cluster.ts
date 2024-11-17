@@ -45,37 +45,36 @@ export class OpeaEksCluster extends Construct {
             },
         // availabilityZones: Fn.getAzs(Stack.of(this).region)
         })
+        if (props.securityGroup) this.securityGroup = props.securityGroup;
+        else {
+            this.securityGroup = new SecurityGroup(this, `${id}-sg1`, { 
+                vpc:this.vpc,
+                allowAllOutbound:true,
+                securityGroupName:`${id}-sg1`
+            });
+        }
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(7000))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8001))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5173))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6379))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6007))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2080))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2081))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2082))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2083))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9090))
+        this.securityGroup.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.tcp(22));
 
-        const sg1 = new SecurityGroup(this, `${id}-sg1`, { 
-            vpc:this.vpc,
-            allowAllOutbound:true,
-            securityGroupName:`${id}-sg1`
-        });
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(22))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(80))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(443))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(7000))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8001))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(5173))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(6379))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(6007))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2080))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2081))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2082))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(2083))
-        sg1.addIngressRule(Peer.anyIpv4(), Port.tcp(9090))
-
-        sg1.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.tcp(22));
-        this.securityGroup = sg1;
-        //TODO - add volume /mnt/opea-models
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
         this.cluster = new Cluster(this, `opea-eks-cluster`, {            
             kubectlLayer: new KubectlV31Layer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
             onEventLayer: new NodeProxyAgentLayer(this, `${id}-node-proxy-agent-layer`),
             vpc: this.vpc,
-            vpcSubnets: [{subnetType:SubnetType.PUBLIC}],
             albController: {
                 version: AlbControllerVersion.V2_8_2
             },
@@ -85,6 +84,8 @@ export class OpeaEksCluster extends Construct {
             kubectlMemory: Size.mebibytes(4096),
             endpointAccess: EndpointAccess.PUBLIC_AND_PRIVATE,
             ...(props?.clusterProps || {}),
+            vpcSubnets: props.subnets?.length ? props.subnets : props.clusterProps?.vpcSubnets?.length ? props.clusterProps.vpcSubnets : [{subnetType:SubnetType.PUBLIC}],
+            securityGroup: this.securityGroup,
             version: KubernetesVersion.V1_31,
             clusterHandlerEnvironment: {
                 ...(props?.environmentVariables || {}), 
