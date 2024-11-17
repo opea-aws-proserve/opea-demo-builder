@@ -7,6 +7,7 @@ export interface OpeaEksProps {
     modelId?:string
     containers?:KubernetesModuleContainer[]
     skipKeyPair?: boolean
+    skipPackagedManifests?:boolean
    // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
