@@ -16,17 +16,20 @@ export class OpeaGuardrailsStack extends Stack {
     });
     
     const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
-    const imported = new ImportedCluster(this, `guardrails-imported`, cluster);
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
-    addManifests('ChatQnA', imported.root, [
-      {
-        name:"chatqna-guardrails",
-        overrides:defaultOverrides,
-        namespace: "guardrails",
-        manifestFiles
-      }
-    ]);
+    new ImportedCluster(this, `guardrails-imported`, {
+      moduleName:'ChatQnA',
+      cluster,
+      containers: [
+        {
+          name:"chatqna-guardrails",
+          overrides:defaultOverrides,
+          manifestFiles,
+          namespace:"guardrails"
+        }
+      ]
+    });
   }
 }

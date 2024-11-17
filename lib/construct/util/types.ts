@@ -1,5 +1,5 @@
 import { InstanceType, IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2"
-import { ClusterProps } from "aws-cdk-lib/aws-eks"
+import { Cluster, ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
@@ -24,6 +24,13 @@ export interface OpeaEksProps {
     nodeGroupDiskSize?:number
     moduleOptions?: KubernetesModuleOptions
     defaultNamespace?:string
+}
+
+export interface OpeaManifestProps {
+    cluster:Cluster
+    moduleName:string
+    containers:KubernetesModuleContainer[]
+    skipPackagedManifests?:boolean
 }
 
 type RecursivePartial<T> = {

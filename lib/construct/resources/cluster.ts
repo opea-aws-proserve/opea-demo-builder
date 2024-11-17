@@ -144,13 +144,13 @@ export class OpeaEksCluster extends Construct {
         return container.namespace || container.name;
     }
 
-    addManifests(cluster:ICluster, ...containers:KubernetesModuleContainer[]) {
+    addManifests(...containers:KubernetesModuleContainer[]) {
         containers.forEach(container => {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
             const useDefaultNamespace = this.isDefaultNamespace(container);
             if (!this.isDefaultNamespace(container)) {
-                namespace = cluster.addManifest(`${container.name}-namespace`, {
+                namespace = this.cluster.addManifest(`${container.name}-namespace`, {
                     apiVersion: "v1",
                     kind: "Namespace",
                     metadata: {
@@ -169,7 +169,7 @@ export class OpeaEksCluster extends Construct {
                 asset.metadata.namespace = this.getNamespaceName(container);
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
-                const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
+                const manifest = this.cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
                 if (!useDefaultNamespace) manifest.node.addDependency(namespace);
             })
         });  

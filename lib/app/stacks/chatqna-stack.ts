@@ -18,13 +18,16 @@ export class OpeaChatQnAStack extends Stack {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
     const manifestFiles = [join(__dirname, '../manifests/chatqna-ingress.yml')];
-    const imported = new ImportedCluster(this, `chatqna-imported`, cluster);
-    addManifests('ChatQnA', imported.root, [
-      {
-        name:"chatqna",
-        overrides:defaultOverrides,
-        manifestFiles
-      }
-    ]);
+    new ImportedCluster(this, `chatqna-imported`, {
+      moduleName:'ChatQnA',
+      cluster,
+      containers: [
+        {
+          name:"chatqna",
+          overrides:defaultOverrides,
+          manifestFiles
+        }
+      ]
+    });
   }
 }
