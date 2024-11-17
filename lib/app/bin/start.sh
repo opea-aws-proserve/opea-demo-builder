@@ -15,6 +15,6 @@ else
     aws s3 sync "./cdk.out" "s3://$WORKSHOP_BUCKET/cloudformation"
     npm run copy-repo;
     zip -r ./workshop.zip ./workshop/
-    aws s3 sync "./workshop.zip" "s3://$WORKSHOP_BUCKET/opea-workshop-builder.zip"
+    aws s3 cp "./workshop.zip" "s3://$WORKSHOP_BUCKET/opea-workshop-builder.zip"
 
 fi
