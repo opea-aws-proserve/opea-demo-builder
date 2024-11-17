@@ -75,8 +75,6 @@ export class OpeaEksCluster extends Construct {
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
             onEventLayer: new NodeProxyAgentLayer(this, `${id}-node-proxy-agent-layer`),
             vpc: this.vpc,
-            vpcSubnets: props.subnets?.length ? props.subnets : [{subnetType:SubnetType.PUBLIC}],
-            securityGroup: this.securityGroup,
             albController: {
                 version: AlbControllerVersion.V2_8_2
             },
@@ -86,6 +84,8 @@ export class OpeaEksCluster extends Construct {
             kubectlMemory: Size.mebibytes(4096),
             endpointAccess: EndpointAccess.PUBLIC_AND_PRIVATE,
             ...(props?.clusterProps || {}),
+            vpcSubnets: props.subnets?.length ? props.subnets : props.clusterProps?.vpcSubnets?.length ? props.clusterProps.vpcSubnets : [{subnetType:SubnetType.PUBLIC}],
+            securityGroup: this.securityGroup,
             version: KubernetesVersion.V1_31,
             clusterHandlerEnvironment: {
                 ...(props?.environmentVariables || {}), 
