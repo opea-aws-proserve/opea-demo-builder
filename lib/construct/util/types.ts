@@ -3,7 +3,7 @@ import { Cluster, ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
-    module: string
+    moduleName: string
     modelId?:string
     containers?:KubernetesModuleContainer[]
     skipKeyPair?: boolean

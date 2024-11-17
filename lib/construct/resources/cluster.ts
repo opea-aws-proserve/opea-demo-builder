@@ -158,8 +158,8 @@ export class OpeaEksCluster extends Construct {
                     }
                 })
             }
-            this.module = this.props.module;
-            const kb = new KubernetesModule(this.props.module, {
+            this.module = this.props.moduleName;
+            const kb = new KubernetesModule(this.props.moduleName, {
                 container,
                 ...(this.props.moduleOptions || {}),
                 skipPackagedManifests: this.props.skipPackagedManifests

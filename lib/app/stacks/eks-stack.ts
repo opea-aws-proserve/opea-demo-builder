@@ -32,7 +32,7 @@ export class OpeaEksStack extends Stack {
     })
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
-      module: 'ChatQnA',
+      moduleName: 'ChatQnA',
     });
   }
 }
