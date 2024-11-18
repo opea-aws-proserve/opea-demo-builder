@@ -1,6 +1,7 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Util from '../lib/util-stack';
+import { writeFileSync } from "fs";
 import { KubernetesModule } from "../lib/construct/modules/kubernetes-module";
 import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/construct/util/types";
 
@@ -38,6 +39,21 @@ describe("Module functions", () => {
        expect(kb.assets[0].metadata.labels["app.kubernetes.io/version"]).toEqual("v1.1")
        expect(rerank.metadata.labels["app.kubernetes.io/version"]).toEqual("cpu-1.6")
        expect((rerank as ManifestTemplateService).spec.ports[0].targetPort).toEqual(2083)
+    });
+
+    it("Separates manifests", () => {
+        const kb = new KubernetesModule('ChatQnA', {
+            container: {
+                name: "chatqna"
+            }
+        });
+        expect(kb.assets.every(a => !(/guardrails/i.test(a.metadata.name)))).toBeTruthy();
+        const kg = new KubernetesModule('ChatQnA', {
+            container: {
+                name: "chatqna-guardrails"
+            }
+        });
+        expect(kg.assets.some(a => (/guardrails/i.test(a.metadata.name)))).toBeTruthy();
     });
 });
 

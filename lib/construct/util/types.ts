@@ -1,12 +1,13 @@
 import { InstanceType, IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2"
-import { ClusterProps } from "aws-cdk-lib/aws-eks"
+import { Cluster, ClusterProps } from "aws-cdk-lib/aws-eks"
 
 
 export interface OpeaEksProps {
-    module: string
+    moduleName: string
     modelId?:string
     containers?:KubernetesModuleContainer[]
     skipKeyPair?: boolean
+    skipPackagedManifests?:boolean
    // helmChartOptions?: Omit<HelmChartOptions, 'chart' | 'chartAsset' | 'repository' | 'version'>
     clusterName?: string
     kubernetesVersion?: string
@@ -25,6 +26,16 @@ export interface OpeaEksProps {
     defaultNamespace?:string
 }
 
+export interface OpeaManifestProps {
+    cluster:Cluster
+    moduleName:string
+    containers?:KubernetesModuleContainer[]
+    manifestFiles?:string[]
+    manifests?: ManifestKind[]
+    namespace?:string
+    skipPackagedManifests?:boolean
+}
+
 type RecursivePartial<T> = {
     [P in keyof T]?: RecursivePartial<T[P]>;
 };
@@ -32,7 +43,7 @@ type RecursivePartial<T> = {
 export interface ExampleModuleOptions {}
 
 export interface KubernetesModuleContainer {
-    name:string
+    name?:string
     namespace?: string
     overridesFile?: string
     overrides?: ManifestOverrides

@@ -1,13 +1,13 @@
 {
   "name": "opea-demo-builder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "lib/index.ts",
+  "types": "lib/types.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "copy-repo": "ts-node ./lib/app/bin/copy-repo.ts",
-    "postinstall": "rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples"
+    "copy-repo": "ts-node ./lib/app/bin/copy-repo.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",

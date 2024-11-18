@@ -13,6 +13,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
+    kubernetesModules: KubernetesModule[] = [];
     vpc:IVpc;
     securityGroup: SecurityGroup
     module:string
@@ -136,39 +137,40 @@ export class OpeaEksCluster extends Construct {
     }
 
     isDefaultNamespace(container:KubernetesModuleContainer):boolean {
-        return !!(this.props.defaultNamespace && this.props.defaultNamespace.toLowerCase() === container.name.toLowerCase());
+        return !!(this.props.defaultNamespace && this.props.defaultNamespace.toLowerCase() === (container.name || 'default').toLowerCase());
     }
 
     getNamespaceName(container:KubernetesModuleContainer): string {
         if (this.isDefaultNamespace(container)) return 'default';
-        return container.namespace || container.name;
+        return container.namespace || container.name || 'default';
     }
 
-    addManifests(cluster:ICluster, ...containers:KubernetesModuleContainer[]) {
+    addManifests(...containers:KubernetesModuleContainer[]) {
         containers.forEach(container => {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
             const useDefaultNamespace = this.isDefaultNamespace(container);
             if (!this.isDefaultNamespace(container)) {
-                namespace = cluster.addManifest(`${container.name}-namespace`, {
+                namespace = this.cluster.addManifest(`${container.name}-namespace`, {
                     apiVersion: "v1",
                     kind: "Namespace",
                     metadata: {
-                        name: container.namespace || container.name
+                        name: container.namespace || container.name || 'default'
                     }
                 })
             }
-            this.module = this.props.module;
-            const kb = new KubernetesModule(this.props.module, {
+            this.module = this.props.moduleName;
+            const kb = new KubernetesModule(this.props.moduleName, {
                 container,
-                ...(this.props.moduleOptions || {})
+                ...(this.props.moduleOptions || {}),
+                skipPackagedManifests: this.props.skipPackagedManifests
             });
-
+            this.kubernetesModules.push(kb);
             kb.assets.forEach(asset => {
                 asset.metadata.namespace = this.getNamespaceName(container);
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
-                const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
+                const manifest = this.cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
                 if (!useDefaultNamespace) manifest.node.addDependency(namespace);
             })
         });  
@@ -187,7 +189,7 @@ export class OpeaEksCluster extends Construct {
                 accessScope: {
                     type: AccessScopeType.NAMESPACE,
                     namespaces: containers.reduce((acc,a) => {
-                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name);
+                        if (!this.isDefaultNamespace(a)) acc.push(a.namespace || a.name || 'default');
                         return acc;
                     }, ["default"] as string[]),
                 },
@@ -198,14 +200,14 @@ export class OpeaEksCluster extends Construct {
         const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
         const addlPrincipals = process.env.OPEA_ROLE_ARN || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
-        const users = process.env.OPEA_USERS || "";
+        const users = process.env.OPEA_USER || "";
         let principals = addlPrincipals.split(',').map(a => a.trim());
         if (!principals[0])principals = [];
         if (roleNames) principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
         if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
 
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-        if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USERS environment variable.")
+        if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USER environment variable.")
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,

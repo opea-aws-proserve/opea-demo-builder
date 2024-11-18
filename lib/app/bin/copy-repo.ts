@@ -11,7 +11,8 @@ const root = join(base, "workshop");
 
 if (existsSync(root)) rmdirSync(root, {recursive:true});
 mkdirSync(root);
-cpSync(join(base, 'lib'), join(root, 'lib'), {recursive:true});
+cpSync(join(base, 'lib/app'), join(root, 'lib/app'), {recursive:true});
+cpSync(join(base, 'lib/construct'), join(root, 'lib/construct'), {recursive:true});
 cpSync(join(base, 'assets/genai-examples/ChatQnA'), join(root, 'assets/genai-examples/ChatQnA'), {recursive:true});
 
 ["LICENSE", ".gitignore", "cdk.json", "tsconfig.json"].forEach(a => copyFileSync(join(base, a), join(root, a)));

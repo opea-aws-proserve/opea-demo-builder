@@ -30,7 +30,7 @@ function set(toSet:string, flags:Record<string,any>, args:(string|number)[]) {
     switch(toSet) {
         case "token": process.env.HUGGING_FACE_TOKEN = (flags.token || args[0]) as string;
         break;
-        case "user": process.env.OPEA_USERS = (flags.user || args[0]) as string;
+        case "user": process.env.OPEA_USER = (flags.user || args[0]) as string;
         break;
         case "role": process.env.OPEA_ROLE_NAME = (flags.role || args[0]) as string;
         break;
