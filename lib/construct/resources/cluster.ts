@@ -200,14 +200,14 @@ export class OpeaEksCluster extends Construct {
         const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
         const addlPrincipals = process.env.OPEA_ROLE_ARN || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
-        const users = process.env.OPEA_USERS || "";
+        const users = process.env.OPEA_USER || "";
         let principals = addlPrincipals.split(',').map(a => a.trim());
         if (!principals[0])principals = [];
         if (roleNames) principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
         if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
 
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-        if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USERS environment variable.")
+        if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USER environment variable.")
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,

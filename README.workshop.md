@@ -10,7 +10,7 @@ Running `cdk synth` at the top level of the stack package (coming soon) will out
 
 - **OPEA_ROLE_NAME** - Name of role you'll be assuming
 - **OPEA_ROLE_ARN** - Arn of role you'll be assuming
-- **OPEA_USERS** - Name of user
+- **OPEA_USER** - Name of user
 *NOTE: only use one of the above 3*
 
 - **HUGGING_FACE_TOKEN** - Access token for hugging face models
