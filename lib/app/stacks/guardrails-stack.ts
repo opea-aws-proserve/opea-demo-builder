@@ -1,9 +1,8 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { defaultOverrides, HuggingFaceToken } from '../constants';
+import { guardrailOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
-import { addManifests } from '../../construct/util';
 import { ImportedCluster } from '../../construct/resources/imported';
 
 export class OpeaGuardrailsStack extends Stack {
@@ -25,7 +24,7 @@ export class OpeaGuardrailsStack extends Stack {
       containers: [
         {
           name:"chatqna-guardrails",
-          overrides:defaultOverrides,
+          overrides:guardrailOverrides,
           manifestFiles,
           namespace:"guardrails"
         }

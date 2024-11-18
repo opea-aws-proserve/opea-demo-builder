@@ -18,22 +18,21 @@ export class KubernetesModule extends ExampleModule {
             if (!kubernetesPath) throw new Error(`Module ${this.moduleName} does not support kubernetes yet`);
             this.kubernetesPath = kubernetesPath;
             const manifestPath = pathFinder(this.kubernetesPath, 'manifest');
-            if (manifestPath) {
-                const assets = readdirSync(manifestPath).reduce((acc,manifest) => {
-                    const key = manifest.split('.')[0].replace(/-/g, '_');
-                    const fullpath = join(manifestPath, manifest);
-                    const content = this.parseFile(fullpath);
-                    if (Object.keys(content).length) acc[key] = content
-                    return acc;
-                }, {} as Record<string,any>);
-                if (options.container.name) {
-                    
-                    const keys = Object.keys(assets);
-                    const containerKey = keys.find(containerName => (new RegExp((options.container.name as string).replace(/\-\_\:\\\/\(\)/, ""), 'i')).test(containerName));
-                    if (containerKey) this.containerName = containerKey;
-                    else this.containerName = keys[0];
-                } else this.containerName = Object.keys(assets)[0];
-                this.assets = assets[this.containerName];
+            if (manifestPath && options.container.name) {
+                const manifestNames = readdirSync(manifestPath);
+                for (let i = 0; i < manifestNames.length; i++) {   
+                    const manifest = manifestNames[i];
+                    const manifestName = manifest.split('.')[0];
+                    const key = manifestName.replace(/-/g, '_').toLowerCase();
+                    const containerName = options.container.name.replace(/-/g, '_').toLowerCase();
+                    if (key === containerName) {
+                        const fullpath = join(manifestPath, manifest);
+                        this.containerName = manifestName;
+                        const content = this.parseFile(fullpath);
+                        this.assets = content as ManifestKind[];
+                        break;
+                    }  
+                }
             }
         }
         if (options.container.manifestFiles?.length) {
@@ -48,10 +47,11 @@ export class KubernetesModule extends ExampleModule {
         }
         if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
 
-        let overrides:ManifestOverrides = this.parseFile(options.container.overridesFile as string) || {}
+        let overrides:ManifestOverrides = (this.parseFile(options.container.overridesFile as string) || {}) as ManifestOverrides
         if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
         if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
         this.parseOverrides(overrides);
+        if (!this.assets.length) throw new Error("No manifests found");
     }
 
     get filename(): string {
@@ -61,7 +61,7 @@ export class KubernetesModule extends ExampleModule {
         ;
     }
 
-    private parseFile(filepath:string | Record<string,any>): Record<string,any> {
+    private parseFile(filepath:string | Record<string,any>): Record<string,any> | ManifestOverrides | ManifestKind[] {
         if (typeof filepath === 'string') {
             if (filepath && existsSync(filepath)) {
                 const file = readFileSync(filepath).toString('utf-8');
@@ -71,9 +71,9 @@ export class KubernetesModule extends ExampleModule {
                         json:true,
                         schema: JSON_SCHEMA,
                         filename: filepath
-                    }) as unknown as ManifestOverrides;
+                    });
                 } else if (filepath.endsWith('.json')) {
-                    return JSON.parse(file) as ManifestOverrides;
+                    return JSON.parse(file);
                 } else return {}
             }
             return {}

@@ -1,9 +1,8 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { defaultOverrides, HuggingFaceToken } from '../constants';
+import { chatOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
-import { addManifests } from '../../construct/util';
 import { ImportedCluster } from '../../construct/resources/imported';
 
 export class OpeaChatQnAStack extends Stack {
@@ -24,7 +23,7 @@ export class OpeaChatQnAStack extends Stack {
       containers: [
         {
           name:"chatqna",
-          overrides:defaultOverrides,
+          overrides:chatOverrides,
           manifestFiles
         }
       ]
