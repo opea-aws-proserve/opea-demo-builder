@@ -19,12 +19,12 @@ export class OpeaOpensearchStack extends Stack {
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
-    new ImportedCluster(this, `guardrails-imported`, {
+    new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
       cluster,
       containers: [
         {
-          name:"chatqna-guardrails",
+          name:"chatqna-opensearch",
           overrides:opensearchOverrides,
           helmChart: {
             chart: {
