@@ -1,5 +1,6 @@
 import { InstanceType, IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2"
-import { Cluster, ClusterProps } from "aws-cdk-lib/aws-eks"
+import { Cluster, ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
+import { Asset } from "aws-cdk-lib/aws-s3-assets"
 
 
 export interface OpeaEksProps {
@@ -32,8 +33,18 @@ export interface OpeaManifestProps {
     containers?:KubernetesModuleContainer[]
     manifestFiles?:string[]
     manifests?: ManifestKind[]
+    helmChart?:HelmProps
     namespace?:string
     skipPackagedManifests?:boolean
+}
+
+export interface HelmProps {
+    chart?: {
+        name:string
+        repo?:string
+    }
+    asset?: Asset
+    options?:Omit<HelmChartOptions,'chart' | 'chartAsset' | 'repository'>
 }
 
 type RecursivePartial<T> = {
@@ -49,6 +60,7 @@ export interface KubernetesModuleContainer {
     overrides?: ManifestOverrides
     manifestFiles?:string[]
     manifests?: ManifestKind[]
+    helmChart?:HelmProps
 }
 
 export interface KubernetesModuleOptions extends ExampleModuleOptions {
