@@ -28,5 +28,6 @@ export class OpeaChatQnAStack extends Stack {
         }
       ]
     });
+
   }
 }
