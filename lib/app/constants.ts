@@ -116,7 +116,4 @@ export const guardrailOverrides = {
     },
     ...nginxOverride
 }
-export const opensearchOverrides = {
-    ...chatOverrides
-
-}
+export const opensearchOverrides = chatOverrides;

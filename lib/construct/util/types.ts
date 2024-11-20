@@ -27,6 +27,11 @@ export interface OpeaEksProps {
     defaultNamespace?:string
 }
 
+export interface OpeaImageProps {
+    dataprepPath:string
+    retrieverPath: string
+}
+
 export interface OpeaManifestProps {
     cluster:Cluster
     moduleName:string

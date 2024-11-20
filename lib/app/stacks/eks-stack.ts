@@ -3,9 +3,12 @@ import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { OpeaImages } from '../../construct/resources/ecr';
+import { join } from 'path';
 
 export class OpeaEksStack extends Stack {
   root:OpeaEksCluster;
+  images: OpeaImages
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, {
@@ -13,6 +16,11 @@ export class OpeaEksStack extends Stack {
       synthesizer: new DefaultStackSynthesizer({
         generateBootstrapVersionRule: false
       })
+    });
+
+    this.images = new OpeaImages(this, "OpeaImages", {
+      dataprepPath: join(__dirname, "../manifests/data-prep"),
+      retrieverPath: join(__dirname, "../manifests/retriever")
     });
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
