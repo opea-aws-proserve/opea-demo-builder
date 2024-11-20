@@ -49,7 +49,7 @@ export class KubernetesModule extends ExampleModule {
 
         let overrides:ManifestOverrides = (this.parseFile(options.container.overridesFile as string) || {}) as ManifestOverrides
         if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
-        if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
+        if (options.container.overrides) overrides = merge(overrides, options.container.overrides);
         this.parseOverrides(overrides);
         if (!this.assets.length) throw new Error("No manifests found");
     }
@@ -115,8 +115,13 @@ export class KubernetesModule extends ExampleModule {
     }
 
     protected parseOverrides(overrides:ManifestOverrides) {
+
         Object.keys(overrides).forEach(override => {
-            const chartIndex = this.assets.findIndex(a => a.metadata.name === override);
+            const chartIndex = this.assets.findIndex(a => {
+                let [name,kind] = override.split("-kind-");
+                if (!kind) kind = "ConfigMap"
+                return a.metadata.name.toLowerCase() === name.toLowerCase() && a.kind.toLowerCase() === kind.toLowerCase();
+            });
             if (chartIndex > -1) {
                 const replacement = merge(this.assets[chartIndex], overrides[override]);
                 this.assets.splice(chartIndex, 1, replacement as ManifestKind);
