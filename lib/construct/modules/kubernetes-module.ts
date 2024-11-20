@@ -45,11 +45,11 @@ export class KubernetesModule extends ExampleModule {
                 }
             })
         }
-        if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
+        if (options.container.manifests) this.assets = [...this.assets, ...(this.normalizeAssetData(options.container.manifests) as ManifestKind[])];
 
         let overrides:ManifestOverrides = (this.parseFile(options.container.overridesFile as string) || {}) as ManifestOverrides
         if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
-        if (options.container.overrides) overrides = {...overrides, ...options.container.overrides};
+        if (options.container.overrides) overrides = this.normalizeAssetData(merge(overrides, options.container.overrides)) as ManifestOverrides;
         this.parseOverrides(overrides);
         if (!this.assets.length) throw new Error("No manifests found");
     }
@@ -112,6 +112,18 @@ export class KubernetesModule extends ExampleModule {
             schema: DEFAULT_SCHEMA,
             flowLevel:-1
         })
+    }
+
+    normalizeAssetData(add:Record<string,any> | (Record<string,any>)[]): ManifestKind[] | ManifestOverrides {
+        const yaml = dump(add, {
+            schema: DEFAULT_SCHEMA,
+            flowLevel:-1
+        });
+
+        return (loadAll(yaml, undefined, {
+            json:true,
+            schema: JSON_SCHEMA
+        })) as ManifestOverrides | ManifestKind[]
     }
 
     protected parseOverrides(overrides:ManifestOverrides) {
