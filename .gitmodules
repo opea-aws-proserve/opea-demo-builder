@@ -3,7 +3,7 @@
 	url = https://github.com/opea-project/GenAIComps.git
 [submodule "assets/GenAIComps"]
 	path = assets/GenAIComps
-	url = https://github.com/opea-project/GenAIComps.git
+	url = https://github.com/opea-aws-proserve/GenAIComps.git
 [submodule "assets/GenAIExamples"]
 	path = assets/GenAIExamples
 	url = https://github.com/opea-project/GenAIExamples.git
