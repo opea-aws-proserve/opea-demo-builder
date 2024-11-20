@@ -1,8 +1,6 @@
-import { CfnOutput, DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
+import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
 import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { OpeaImages } from '../../construct/resources/ecr';
 import { join } from 'path';
 
