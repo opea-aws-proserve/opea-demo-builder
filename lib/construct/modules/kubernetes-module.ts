@@ -73,7 +73,7 @@ export class KubernetesModule extends ExampleModule {
                         filename: filepath
                     });
                 } else if (filepath.endsWith('.json')) {
-                    return JSON.parse(file);
+                    return this.normalizeAssetData(JSON.parse(file));
                 } else return {}
             }
             return {}
