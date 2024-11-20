@@ -22,7 +22,7 @@ export class OpeaOpensearchStack extends Stack {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
 
-    const stack = Stack.of(this);
+    const stack = Stack.of(this); 
     new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
       cluster,
