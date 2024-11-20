@@ -137,7 +137,7 @@ node_modules
 # CDK asset staging directory
 .cdk.staging
 cdk.out
-/assets/genai-examples
+/assets/
 /etc
 cdk.context.json
 !env.jest.js
