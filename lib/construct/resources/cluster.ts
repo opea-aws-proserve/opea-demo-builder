@@ -62,7 +62,10 @@ export class OpeaEksCluster extends Construct {
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2082))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2083))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9090))
-        this.securityGroup.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.tcp(22));
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9200))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9300))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9600))
+        this.securityGroup.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.allTcp());
 
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
         const keyPair = process.env.EC2_SSH_KEYPAIR || (new KeyPair(this, `${id}-keypair`)).keyPairName;

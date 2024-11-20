@@ -23,3 +23,4 @@ const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.
 const opensearch = new OpeaOpensearchStack(app, 'OpeaOpensearchStack', eks.root.cluster, stackProps);
 chat.addDependency(eks);
 guardrails.addDependency(eks);
+opensearch.addDependency(eks);

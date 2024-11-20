@@ -8,7 +8,6 @@ import { ManifestTemplateConfigMap, ManifestTemplateService } from "../lib/const
 describe("Module functions", () => {
     it("Check assets", () => {
        
-       // writeFileSync('x.json',JSON.stringify(new KubernetesModule('ChatQnA').assets, null, '\t'))
        const kb = new KubernetesModule('ChatQnA', {
         container: {
             name: "chatqna",
