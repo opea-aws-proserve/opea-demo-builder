@@ -2,7 +2,8 @@ import { lstatSync, readdirSync } from "fs"
 import { join } from "path"
 
 export const examplePath = join(__dirname, '../../../assets', 'genai-examples');
-
+//https://github.com/opea-project/GenAIExamples.git
+//https://github.com/opea-project/GenAIComps.git
 export class ExampleManager {
 
     moduleNames:string[]

@@ -1,8 +1,6 @@
-import { CfnOutput, DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
+import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
 import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { OpeaImages } from '../../construct/resources/ecr';
 import { join } from 'path';
 
@@ -19,8 +17,8 @@ export class OpeaEksStack extends Stack {
     });
 
     this.images = new OpeaImages(this, "OpeaImages", {
-      dataprepPath: join(__dirname, "../manifests/data-prep"),
-      retrieverPath: join(__dirname, "../manifests/retriever")
+      dataprepPath: join(__dirname, "../../../assets/GenAIComps/comps/dataprep/opensearch/langchain"),
+      retrieverPath: join(__dirname, "../../../assets/GenAIComps/comps/retrievers/opensearch/langchain")
     });
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {

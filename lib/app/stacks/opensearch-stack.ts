@@ -21,6 +21,7 @@ export class OpeaOpensearchStack extends Stack {
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
+
     const stack = Stack.of(this);
     new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
@@ -30,7 +31,10 @@ export class OpeaOpensearchStack extends Stack {
         {
           name:"chatqna-opensearch",
           namespace:"opensearch",
-          manifestFiles: [join(__dirname, "../manifests/opensearch.yml")],
+          manifestFiles: [
+            join(__dirname, "../../../assets/opensearch.yml"),
+            join(__dirname, '../manifests/opensearch-ingress.yml')
+          ],
           helmChart: {
             asset: new Asset(this, `${id}-asset`, {
               path: join(__dirname, '../manifests/chart')
