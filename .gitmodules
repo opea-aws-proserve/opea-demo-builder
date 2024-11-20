@@ -1,0 +1,9 @@
+[submodule "GenAIComps"]
+	path = GenAIComps
+	url = https://github.com/opea-project/GenAIComps.git
+[submodule "assets/GenAIComps"]
+	path = assets/GenAIComps
+	url = https://github.com/opea-project/GenAIComps.git
+[submodule "assets/GenAIExamples"]
+	path = assets/GenAIExamples
+	url = https://github.com/opea-project/GenAIExamples.git

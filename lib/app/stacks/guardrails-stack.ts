@@ -14,10 +14,11 @@ export class OpeaGuardrailsStack extends Stack {
       })
     });
     
-    const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
+    const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
+
     new ImportedCluster(this, `guardrails-imported`, {
       moduleName:'ChatQnA',
       cluster,

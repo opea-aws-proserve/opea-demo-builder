@@ -17,8 +17,8 @@ export class OpeaEksStack extends Stack {
     });
 
     this.images = new OpeaImages(this, "OpeaImages", {
-      dataprepPath: join(__dirname, "../manifests/data-prep"),
-      retrieverPath: join(__dirname, "../manifests/retriever")
+      dataprepPath: join(__dirname, "../../../assets/GenAIComps/comps/dataprep/opensearch/langchain"),
+      retrieverPath: join(__dirname, "../../../assets/GenAIComps/comps/retrievers/opensearch/langchain")
     });
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
