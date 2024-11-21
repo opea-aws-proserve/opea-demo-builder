@@ -13,7 +13,6 @@ const stackProps = {
     account: process.env.CDK_DEFAULT_ACCOUNT || process.env.AWS_ACCOUNT, 
     region: process.env.CDK_DEFAULT_REGION  || process.env.AWS_REGION || 'us-east-1'
   },
-
 }
 
 const eks = new OpeaEksStack(app, 'OpeaEksStack', stackProps);
