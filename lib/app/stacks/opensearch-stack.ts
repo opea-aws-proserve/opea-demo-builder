@@ -26,13 +26,13 @@ export class OpeaOpensearchStack extends Stack {
     new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
       cluster,
-      skipPackagedManifests: true,
+    //  skipPackagedManifests: true,
       containers: [
         {
           name:"chatqna-opensearch",
           namespace:"opensearch",
           manifestFiles: [
-            join(__dirname, "../../../assets/opensearch.yml"),
+      //      join(__dirname, "../../../assets/opensearch.yml"),
             join(__dirname, '../manifests/opensearch-ingress.yml')
           ],
           helmChart: {
@@ -40,7 +40,7 @@ export class OpeaOpensearchStack extends Stack {
               path: join(__dirname, '../manifests/chart')
             })
           },
-          overrides:{
+        /*  overrides:{
             ...opensearchOverrides,
             "chatqna-data-prep-kind-deployment": {
               spec: {
@@ -60,7 +60,7 @@ export class OpeaOpensearchStack extends Stack {
                 }
               }
             }
-          }
+          }*/
         }
       ]
     });
