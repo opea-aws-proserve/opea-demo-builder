@@ -11,6 +11,6 @@ else
     cdk bootstrap
     cdk deploy --require-approval never OpeaEksStack OpeaChatQnAStack
     cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
-#   cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
+    cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
 
 fi
