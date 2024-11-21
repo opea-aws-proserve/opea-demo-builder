@@ -7,10 +7,13 @@ import { HuggingFaceToken, opensearchOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { join } from 'path';
+import { OpeaImages } from '../../construct/resources/ecr';
 //import { addManifests } from '../../construct/util';
 //import { ImportedCluster } from '../resources/imported';
 
 export class OpeaOpensearchStack extends Stack {
+ //images:OpeaImages
+
   constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
     super(scope, id, {
       ...props,
@@ -22,8 +25,13 @@ export class OpeaOpensearchStack extends Stack {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
 
+  /*  this.images = new OpeaImages(this, "OpeaImages", {
+      dataprepPath: join(__dirname, "../../../assets/genai-comps/comps/dataprep/opensearch/langchain"),
+      retrieverPath: join(__dirname, "../../../assets/genai-comps/comps/retrievers/opensearch/langchain")
+    });*/
+
     const stack = Stack.of(this); 
-    new ImportedCluster(this, `opensearch-imported`, {
+    const importedCluster = new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
       cluster,
     //  skipPackagedManifests: true,
@@ -64,6 +72,6 @@ export class OpeaOpensearchStack extends Stack {
         }
       ]
     });
-    
+   // importedCluster.node.addDependency(this.images);
   }
 }
