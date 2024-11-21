@@ -6,7 +6,7 @@ import { join } from 'path';
 
 export class OpeaEksStack extends Stack {
   root:OpeaEksCluster;
-  images: OpeaImages
+  //images: OpeaImages
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, {
@@ -16,10 +16,10 @@ export class OpeaEksStack extends Stack {
       })
     });
 
-    this.images = new OpeaImages(this, "OpeaImages", {
+    /*this.images = new OpeaImages(this, "OpeaImages", {
       dataprepPath: join(__dirname, "../../../assets/genai-comps/comps/dataprep/opensearch/langchain"),
       retrieverPath: join(__dirname, "../../../assets/genai-comps/comps/retrievers/opensearch/langchain")
-    });
+    });*/
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
       moduleName: 'ChatQnA',
