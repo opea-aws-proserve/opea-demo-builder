@@ -20,15 +20,13 @@ export class OpeaImages extends Construct {
             http_proxy: ""
         }
         this.dataprep = new DockerImageAsset(this, "dataprep-opensearch", {
-            directory: props.directory,
-            file: props.dataprepPath,
+            directory: props.dataprepPath,
             assetName: "dataprep-opensearch",
             buildArgs
         })    
 
         this.retriever = new DockerImageAsset(this, "retriever-opensearch-server", {
-            directory: props.directory,
-            file: props.retrieverPath,
+            directory: props.retrieverPath,
             assetName: "retriever-opensearch-server",
             buildArgs
         });

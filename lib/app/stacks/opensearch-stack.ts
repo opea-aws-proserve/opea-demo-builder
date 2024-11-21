@@ -17,14 +17,14 @@ export class OpeaOpensearchStack extends Stack {
         generateBootstrapVersionRule: false
       })
     });
+    process.env.PYTHONPATH = join("assets", "genai-comps");
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
 
     this.images = new OpeaImages(this, "OpeaImages", {
-      directory: "../../../assets/genai-comps",
-      dataprepPath: join(__dirname, "./comps/dataprep/opensearch/langchain/"),
-      retrieverPath: join(__dirname, "./comps/retrievers/opensearch/langchain/")
+      dataprepPath: join(__dirname, "../../../assets/genai-comps/comps/dataprep/opensearch/langchain"),
+      retrieverPath: join(__dirname, "../../../assets/genai-comps/comps/retrievers/opensearch/langchain")
     });
 
     const stack = Stack.of(this); 
