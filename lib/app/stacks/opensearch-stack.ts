@@ -22,8 +22,9 @@ export class OpeaOpensearchStack extends Stack {
     }
 
     this.images = new OpeaImages(this, "OpeaImages", {
-      dataprepPath: join(__dirname, "../../../assets/genai-comps/comps/dataprep/opensearch/langchain"),
-      retrieverPath: join(__dirname, "../../../assets/genai-comps/comps/retrievers/opensearch/langchain")
+      directory: "../../../assets/genai-comps",
+      dataprepPath: join(__dirname, "./comps/dataprep/opensearch/langchain/"),
+      retrieverPath: join(__dirname, "./comps/retrievers/opensearch/langchain/")
     });
 
     const stack = Stack.of(this); 
