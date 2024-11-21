@@ -28,7 +28,6 @@ export interface OpeaEksProps {
 }
 
 export interface OpeaImageProps {
-    directory:string
     dataprepPath:string
     retrieverPath: string
 }
