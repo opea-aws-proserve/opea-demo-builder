@@ -1,18 +1,14 @@
 import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-//import { defaultOverrides } from '../constants';
-//import { join } from 'path';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
 import { HuggingFaceToken, opensearchOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { join } from 'path';
 import { OpeaImages } from '../../construct/resources/ecr';
-//import { addManifests } from '../../construct/util';
-//import { ImportedCluster } from '../resources/imported';
 
 export class OpeaOpensearchStack extends Stack {
- //images:OpeaImages
+  images:OpeaImages
 
   constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
     super(scope, id, {
@@ -25,22 +21,22 @@ export class OpeaOpensearchStack extends Stack {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
 
-  /*  this.images = new OpeaImages(this, "OpeaImages", {
+    this.images = new OpeaImages(this, "OpeaImages", {
       dataprepPath: join(__dirname, "../../../assets/genai-comps/comps/dataprep/opensearch/langchain"),
       retrieverPath: join(__dirname, "../../../assets/genai-comps/comps/retrievers/opensearch/langchain")
-    });*/
+    });
 
     const stack = Stack.of(this); 
     const importedCluster = new ImportedCluster(this, `opensearch-imported`, {
       moduleName:'ChatQnA',
       cluster,
-    //  skipPackagedManifests: true,
+      skipPackagedManifests: true,
       containers: [
         {
           name:"chatqna-opensearch",
           namespace:"opensearch",
           manifestFiles: [
-      //      join(__dirname, "../../../assets/opensearch.yml"),
+            join(__dirname, "../../../assets/opensearch.yml"),
             join(__dirname, '../manifests/opensearch-ingress.yml')
           ],
           helmChart: {
@@ -48,7 +44,7 @@ export class OpeaOpensearchStack extends Stack {
               path: join(__dirname, '../manifests/chart')
             })
           },
-        /*  overrides:{
+          overrides:{
             ...opensearchOverrides,
             "chatqna-data-prep-kind-deployment": {
               spec: {
@@ -68,10 +64,10 @@ export class OpeaOpensearchStack extends Stack {
                 }
               }
             }
-          }*/
+          }
         }
       ]
     });
-   // importedCluster.node.addDependency(this.images);
+    importedCluster.node.addDependency(this.images);
   }
 }
