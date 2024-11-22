@@ -29,14 +29,14 @@ export class OpeaOpensearchStack extends Stack {
           name:"chatqna-opensearch",
           namespace:"opensearch",
           manifestFiles: [
-            join(__dirname, "../manifests/opensearch.yml"),
+            join(__dirname, "../manifests/opensearch-all.yml"),
             join(__dirname, '../manifests/opensearch-ingress.yml')
           ],
-          helmChart: {
+        /*  helmChart: {
             asset: new Asset(this, `${id}-asset`, {
               path: join(__dirname, '../manifests/chart')
             })
-          },
+          },*/
           overrides:{
             ...opensearchOverrides,
             "chatqna-data-prep-kind-deployment": {

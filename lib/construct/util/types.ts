@@ -31,6 +31,7 @@ export interface OpeaImageProps {
     directory:string
     dataprepPath:string
     retrieverPath: string
+    bedrockPath:string
 }
 
 export interface OpeaManifestProps {

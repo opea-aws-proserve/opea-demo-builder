@@ -7,6 +7,7 @@ import { StringParameter } from "aws-cdk-lib/aws-ssm";
 export class OpeaImages extends Construct {
     dataprep: DockerImageAsset
     retriever: DockerImageAsset
+    bedrock: DockerImageAsset
 
     constructor(
         scope:Construct, 
@@ -33,6 +34,13 @@ export class OpeaImages extends Construct {
             buildArgs
         });
 
+        this.bedrock = new DockerImageAsset(this, "bedrock-image", {
+            directory: props.directory,
+            file: props.bedrockPath,
+            assetName: "bedrock-image",
+            buildArgs
+        });
+
         new CfnOutput(this, "dataprep-opensearch-output", {
             exportName: "dataprep-opensearch-uri",
             value: this.dataprep.imageUri
@@ -43,6 +51,11 @@ export class OpeaImages extends Construct {
             value: this.retriever.imageUri
         });
 
+        new CfnOutput(this, "bedrock-image-output", {
+            exportName: "bedrock-image-uri",
+            value: this.bedrock.imageUri
+        });
+
         new StringParameter(this, "dataprep-opensearch-parameter", {
             parameterName: "dataprep-opensearch-uri",
             stringValue: this.dataprep.imageUri
@@ -51,6 +64,11 @@ export class OpeaImages extends Construct {
         new StringParameter(this, "retriever-opensearch-server-parameter", {
             parameterName: "retriever-opensearch-server-uri",
             stringValue: this.retriever.imageUri
+        });
+
+        new StringParameter(this, "bedrock-image-parameter", {
+            parameterName: "bedrock-image-uri",
+            stringValue: this.bedrock.imageUri
         });
 
 
