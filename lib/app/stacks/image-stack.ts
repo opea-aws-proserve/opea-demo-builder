@@ -21,7 +21,8 @@ export class OpeaImageStack extends Stack {
     this.images = new OpeaImages(this, "OpeaImages", {
       directory: join(__dirname, "../../../assets/genai-comps"),
       dataprepPath: "comps/dataprep/opensearch/langchain/Dockerfile",
-      retrieverPath: "comps/retrievers/opensearch/langchain/Dockerfile"
+      retrieverPath: "comps/retrievers/opensearch/langchain/Dockerfile",
+      bedrockPath: "comps/llms/text-generation/bedrock/Dockerfile"
     });
   }
 }
