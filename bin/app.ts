@@ -5,7 +5,6 @@ import { App } from 'aws-cdk-lib';
 import { OpeaGuardrailsStack } from '../lib/app/stacks/guardrails-stack';
 import { OpeaChatQnAStack } from '../lib/app/stacks/chatqna-stack';
 import { OpeaOpensearchStack } from '../lib/app/stacks/opensearch-stack';
-import { OpeaImageStack } from '../lib/app/stacks/image-stack';
 import { OpeaBedrockStack } from '../lib/app/stacks/bedrock-stack';
 
 const app = new App();
