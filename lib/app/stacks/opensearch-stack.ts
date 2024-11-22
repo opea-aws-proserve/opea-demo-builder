@@ -43,7 +43,7 @@ export class OpeaOpensearchStack extends Stack {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: Fn.importValue("dataprep-opensearch-uri")}]
+                    containers: [{image: "976193265124.dkr.ecr.us-east-1.amazonaws.com/opea/dataprep-opensearch"}]
                   }
                 }
               }
@@ -52,7 +52,7 @@ export class OpeaOpensearchStack extends Stack {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: Fn.importValue("retriever-opensearch-server-uri")}]
+                    containers: [{image: "976193265124.dkr.ecr.us-east-1.amazonaws.com/opea/retriever-opensearch-server"}]
                   }
                 }
               }
