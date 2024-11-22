@@ -5,7 +5,8 @@ import { bedrockOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
 
-export class OpeaOpensearchStack extends Stack {
+// NOTE: Before using this stack you must enable the model in the region you're using in the AWS account
+export class OpeaBedrockStack extends Stack {
 
   constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
     super(scope, id, {
