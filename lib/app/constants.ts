@@ -3,7 +3,7 @@ export const HuggingFaceToken = process.env.HUGGING_FACE_TOKEN || process.env.HU
 const nginxOverride = {
     "chatqna-nginx-config": {
         data: {
-            "default.conf": `|+
+            "default.conf": `  
                 # Copyright (C) 2024 Intel Corporation
                 # SPDX-License-Identifier: Apache-2.0
 

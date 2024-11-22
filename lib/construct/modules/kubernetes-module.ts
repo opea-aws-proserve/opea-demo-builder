@@ -38,7 +38,6 @@ export class KubernetesModule extends ExampleModule {
         if (options.container.manifestFiles?.length) {
             options.container.manifestFiles.forEach((mf:string) => {
                 let fileContent = this.parseFile(mf);
-
                 if (Object.keys(fileContent).length) { 
                     if (!Array.isArray(fileContent)) fileContent = [fileContent]
                     this.assets.push(...fileContent as ManifestKind[]);
