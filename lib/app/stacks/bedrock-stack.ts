@@ -34,7 +34,7 @@ export class OpeaBedrockStack extends Stack {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: Fn.importValue("bedrock-image-uri")}]
+                    containers: [{image: "976193265124.dkr.ecr.us-east-1.amazonaws.com/opea/bedrock"}]
                   }
                 }
               }

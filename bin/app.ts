@@ -21,12 +21,9 @@ const eks = new OpeaEksStack(app, 'OpeaEksStack', stackProps);
 
 const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster, stackProps);
 const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster, stackProps);
-const image = new OpeaImageStack(app, 'OpeaImageStack', stackProps);
 const opensearch = new OpeaOpensearchStack(app, 'OpeaOpensearchStack', eks.root.cluster, stackProps);
 const bedrock = new OpeaBedrockStack(app, "OpeaBedrockStack", eks.root.cluster, stackProps);
 chat.addDependency(eks);
 guardrails.addDependency(eks);
 opensearch.addDependency(eks);
-opensearch.addDependency(image);
 bedrock.addDependency(eks);
-bedrock.addDependency(image);
