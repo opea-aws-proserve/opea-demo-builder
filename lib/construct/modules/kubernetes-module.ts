@@ -38,18 +38,17 @@ export class KubernetesModule extends ExampleModule {
         if (options.container.manifestFiles?.length) {
             options.container.manifestFiles.forEach((mf:string) => {
                 let fileContent = this.parseFile(mf);
-
                 if (Object.keys(fileContent).length) { 
                     if (!Array.isArray(fileContent)) fileContent = [fileContent]
                     this.assets.push(...fileContent as ManifestKind[]);
                 }
             })
         }
-        if (options.container.manifests) this.assets = [...this.assets, ...(this.normalizeAssetData(options.container.manifests) as ManifestKind[])];
+        if (options.container.manifests) this.assets = [...this.assets, ...options.container.manifests];
 
         let overrides:ManifestOverrides = (this.parseFile(options.container.overridesFile as string) || {}) as ManifestOverrides
         if (Array.isArray(overrides)) throw new Error(`Overrides file ${options.container.overridesFile} cannot be an array`);
-        if (options.container.overrides) overrides = this.normalizeAssetData(merge(overrides, options.container.overrides)) as ManifestOverrides;
+        if (options.container.overrides) overrides = merge(overrides, options.container.overrides);
         this.parseOverrides(overrides);
         if (!this.assets.length) throw new Error("No manifests found");
     }
@@ -73,7 +72,7 @@ export class KubernetesModule extends ExampleModule {
                         filename: filepath
                     });
                 } else if (filepath.endsWith('.json')) {
-                    return this.normalizeAssetData(JSON.parse(file));
+                    return JSON.parse(file);
                 } else return {}
             }
             return {}
@@ -112,18 +111,6 @@ export class KubernetesModule extends ExampleModule {
             schema: DEFAULT_SCHEMA,
             flowLevel:-1
         })
-    }
-
-    normalizeAssetData(add:Record<string,any> | (Record<string,any>)[]): ManifestKind[] | ManifestOverrides {
-        const yaml = dump(add, {
-            schema: DEFAULT_SCHEMA,
-            flowLevel:-1
-        });
-
-        return (loadAll(yaml, undefined, {
-            json:true,
-            schema: JSON_SCHEMA
-        })) as ManifestOverrides | ManifestKind[]
     }
 
     protected parseOverrides(overrides:ManifestOverrides) {

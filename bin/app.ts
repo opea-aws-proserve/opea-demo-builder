@@ -5,6 +5,7 @@ import { App } from 'aws-cdk-lib';
 import { OpeaGuardrailsStack } from '../lib/app/stacks/guardrails-stack';
 import { OpeaChatQnAStack } from '../lib/app/stacks/chatqna-stack';
 import { OpeaOpensearchStack } from '../lib/app/stacks/opensearch-stack';
+import { OpeaImageStack } from '../lib/app/stacks/image-stack';
 
 const app = new App();
 
@@ -19,7 +20,9 @@ const eks = new OpeaEksStack(app, 'OpeaEksStack', stackProps);
 
 const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster, stackProps);
 const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster, stackProps);
+const image = new OpeaImageStack(app, 'OpeaImageStack', stackProps);
 const opensearch = new OpeaOpensearchStack(app, 'OpeaOpensearchStack', eks.root.cluster, stackProps);
 chat.addDependency(eks);
 guardrails.addDependency(eks);
 opensearch.addDependency(eks);
+opensearch.addDependency(image);
