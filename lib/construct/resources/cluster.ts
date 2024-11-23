@@ -57,6 +57,7 @@ export class OpeaEksCluster extends Construct {
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5173))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6379))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6007))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2021))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2080))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2081))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2082))
@@ -105,8 +106,8 @@ export class OpeaEksCluster extends Construct {
             desiredSize: 1,
             maxSize: 1,
             amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
-            diskSize: props.nodeGroupDiskSize || 100,
-            nodegroupName: `${id}-nodegroup`,
+            diskSize: props.nodeGroupDiskSize || 500,
+            nodegroupName: `${id}-node-group`,
             remoteAccess: props.skipKeyPair ? undefined : {
                 sshKeyName: keyPair,
                 sourceSecurityGroups: [this.securityGroup]
