@@ -62,7 +62,7 @@ export class OpeaOpensearchStack extends Stack {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: "976193265124.dkr.ecr.us-east-1.amazonaws.com/opea/dataprep-opensearch"}]
+                    containers: [{image: "public.ecr.aws/h5a9b7x0/opeastaging/dataprep-opensearch"}]
                   }
                 }
               }
@@ -71,7 +71,7 @@ export class OpeaOpensearchStack extends Stack {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: "976193265124.dkr.ecr.us-east-1.amazonaws.com/opea/retriever-opensearch-server"}]
+                    containers: [{image: "public.ecr.aws/h5a9b7x0/opeastaging/retriever-opensearch-server:latest"}]
                   }
                 }
               }
