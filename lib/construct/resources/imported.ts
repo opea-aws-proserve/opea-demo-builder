@@ -76,7 +76,7 @@ export class ImportedCluster extends Construct {
             const cluster = this.root;
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
-            if (container.namespace) {
+            if (container.namespace && !process.env.SKIP_NAMESPACE) {
                 namespace = cluster.addManifest(`${container.name}-namespace${id}`, {
                     apiVersion: "v1",
                     kind: "Namespace",
