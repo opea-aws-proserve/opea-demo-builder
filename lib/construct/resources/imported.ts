@@ -4,6 +4,7 @@ import { KubernetesModuleContainer, OpeaManifestProps } from "../util/types";
 import { KubernetesModule } from "../modules/kubernetes-module";
 import { Stack } from "aws-cdk-lib";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { addIngress } from "../util";
 
 export class ImportedCluster extends Construct {
     root:ICluster
@@ -85,7 +86,7 @@ export class ImportedCluster extends Construct {
                     }
                 })
             }
-            
+            addIngress(cluster, container.namespace || "default", container.name || "chatqna");
             const kb = new KubernetesModule(this.props.moduleName, {
                 container,
                 ...({skipPackagedManifests:this.props.skipPackagedManifests})

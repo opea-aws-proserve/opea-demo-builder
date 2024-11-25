@@ -1,6 +1,6 @@
 import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, ICluster, KubernetesManifest, KubernetesVersion, NodegroupAmiType } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
-import { getClusterLogLevel } from "../util";
+import { addIngress, getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
 import { FlowLogDestination, InstanceClass, InstanceSize, InstanceType, IVpc, KeyPair, Peer, Port, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import * as Constants from '../constants.json';
@@ -161,9 +161,10 @@ export class OpeaEksCluster extends Construct {
                     apiVersion: "v1",
                     kind: "Namespace",
                     metadata: {
-                        name: container.namespace || container.name || 'default'
+                        name: container.namespace || container.name
                     }
                 })
+                if (container.name && container.namespace) addIngress(this.cluster, container.namespace, container.name);
             }
             this.module = this.props.moduleName;
             const kb = new KubernetesModule(this.props.moduleName, {

@@ -111,3 +111,41 @@ export function addManifests(
     });  
 }
 
+export function addIngress(cluster:ICluster, namespace:string, name:string): KubernetesManifest {
+    return cluster.addManifest(`${name}-ingress`, {
+        apiVersion: "networking.k8s.io/v1",
+        kind: "Ingress",
+        metadata: {
+            name: `${name}-ingress`,
+            namespace: namespace,
+            labels: {
+                "app.kubernetes.io/name": `${name}-ingress`
+            },
+            annotations: {
+                "alb.ingress.kubernetes.io/load-balancer-name": `${name}-ingress`,
+                "alb.ingress.kubernetes.io/target-type": "ip",
+                "alb.ingress.kubernetes.io/scheme": "internet-facing",
+                "alb.ingress.kubernetes.io/healthcheck-path": "/"
+            }
+        },
+        spec: {
+            ingressClassName: "alb",
+            rules: [{
+                http: {
+                    paths: [{
+                        path: "/",
+                        pathType: "Prefix",
+                        backend: {
+                            service: {
+                                name: "chatqna-nginx",
+                                port: {
+                                    number: 80
+                                }
+                            }
+                        }
+                    }]
+                }
+            }]
+        }
+    });
+}
