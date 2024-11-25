@@ -11,12 +11,13 @@ export function setenv(): CliArgFlags {
     else if (process.env.MODULE) flags.module = process.env.MODULE
     if (process.env.clusterName || process.env.CLUSTER_NAME) clusterName = (process.env.clusterName || process.env.CLUSTER_NAME) as string
     
-    if (clusterName) flags.cluster = getCluster(process.env);
-
+    if (clusterName && !flags.reset) flags.cluster = getCluster(process.env);
+    else flags.cluster = undefined;
     return flags
 }
 
 export function getCluster(flags:any): ClusterAttributes {
+
     const strAttributes = ['clusterName','clusterCertificateAuthorityData',
         'clusterEncryptionConfigKeyArn', 'clusterEndpoint', 
         'clusterHandlerSecurityGroupId', 'clusterSecurityGroupId',
