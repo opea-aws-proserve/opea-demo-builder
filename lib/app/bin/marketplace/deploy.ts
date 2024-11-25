@@ -44,7 +44,7 @@ export async function deploy(flags:CliArgFlags, args:CliArgArgs) {
     const stackProps = {
       env: { account, region }
     }
-    if (flags.SKIP_NAMESPACE) process.env.SKIP_NAMESPACE = "true";
+    if (flags.SKIP_NAMESPACE || flags.skipNamespace || flags["skip-namespace"] || flags.skip_namespace) process.env.SKIP_NAMESPACE = "true";
     if (!flags.cluster && flags.clusterName) {
         flags.cluster = getCluster(flags);
     }
