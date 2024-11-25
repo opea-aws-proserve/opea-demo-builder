@@ -1,5 +1,5 @@
 import { InstanceType, IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/aws-ec2"
-import { Cluster, ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
+import { Cluster, ClusterAttributes, ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
 import { Asset } from "aws-cdk-lib/aws-s3-assets"
 
 
@@ -35,7 +35,7 @@ export interface OpeaImageProps {
 }
 
 export interface OpeaManifestProps {
-    cluster:Cluster
+    cluster:Cluster | ClusterAttributes
     moduleName:string
     containers?:KubernetesModuleContainer[]
     manifestFiles?:string[]

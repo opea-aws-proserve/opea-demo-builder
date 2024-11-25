@@ -1,5 +1,5 @@
 export interface CliArgFlags {
-    [name:string]: string | boolean | number
+    [name:string]: any
 }
 
 export type CliArgArgs = (string | number)[]

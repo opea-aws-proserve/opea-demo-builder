@@ -1,6 +1,6 @@
 import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Cluster } from 'aws-cdk-lib/aws-eks';
+import { Cluster, ClusterAttributes } from 'aws-cdk-lib/aws-eks';
 import { bedrockOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
@@ -8,7 +8,7 @@ import { join } from 'path';
 // NOTE: Before using this stack you must enable the model in the region you're using in the AWS account
 export class OpeaBedrockStack extends Stack {
 
-  constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
+  constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({

@@ -1,6 +1,6 @@
 import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Addon, CfnAddon, Cluster, ICluster } from 'aws-cdk-lib/aws-eks';
+import { Addon, CfnAddon, Cluster, ClusterAttributes, ICluster } from 'aws-cdk-lib/aws-eks';
 import { HuggingFaceToken, opensearchOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
@@ -8,7 +8,7 @@ import { ManagedPolicy, Role, ServicePrincipal, SessionTagsPrincipal } from 'aws
 
 export class OpeaOpensearchStack extends Stack {
 
-  constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
+  constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export OPEA_DEMO_BUILDER="https://github.com/opea-aws-proserve/opea-demo-builder.git"
-rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/genai-examples
+rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/GenaiExamples
 #export OPEA_ROLE_ARN=$OPEA_ROLE_ARN
 #export OPEA_ROLE_NAME=$OPEA_ROLE_NAME
 #export OPEA_USER=$OPEA_USER

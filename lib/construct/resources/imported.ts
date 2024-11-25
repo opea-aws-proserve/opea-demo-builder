@@ -1,7 +1,9 @@
-import { Cluster, ICluster, KubectlProvider, KubernetesManifest } from "aws-cdk-lib/aws-eks";
+import { AccessEntry, AccessPolicyArn, AccessScopeType, Cluster, ClusterAttributes, ICluster, KubectlProvider, KubernetesManifest } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
 import { KubernetesModuleContainer, OpeaManifestProps } from "../util/types";
 import { KubernetesModule } from "../modules/kubernetes-module";
+import { Stack } from "aws-cdk-lib";
+import { Vpc } from "aws-cdk-lib/aws-ec2";
 
 export class ImportedCluster extends Construct {
     root:ICluster
@@ -13,22 +15,32 @@ export class ImportedCluster extends Construct {
         protected props:OpeaManifestProps
     ) {
         super(scope,id);
-        const cluster = props.cluster;
-        const kubectlProvider = KubectlProvider.getOrCreate(this, cluster);
-
-        this.root = Cluster.fromClusterAttributes(this, `${id}-imported-cluster`, {
-            clusterName: cluster.clusterName,
-            kubectlRoleArn:cluster.kubectlRole?.roleArn,
-            kubectlProvider,
-            vpc:cluster.vpc,
-            clusterEndpoint:cluster.clusterEndpoint,
-            kubectlLambdaRole:cluster.kubectlLambdaRole,
-            kubectlEnvironment:cluster.kubectlEnvironment,
-            openIdConnectProvider:cluster.openIdConnectProvider,
-            kubectlLayer:cluster.kubectlLayer,
-            awscliLayer:cluster.awscliLayer,
-            onEventLayer:cluster.onEventLayer
-        });
+        if ((props.cluster as ICluster).clusterArn) {
+            const cluster = props.cluster as ICluster;
+            const kubectlProvider = KubectlProvider.getOrCreate(this, cluster);
+            this.root = Cluster.fromClusterAttributes(this, `${id}-imported-cluster`, {
+                clusterName: cluster.clusterName,
+                kubectlRoleArn:cluster.kubectlRole?.roleArn,
+                kubectlProvider,
+                vpc:cluster.vpc,
+                clusterEndpoint:cluster.clusterEndpoint,
+                kubectlLambdaRole:cluster.kubectlLambdaRole,
+                kubectlEnvironment:cluster.kubectlEnvironment,
+                openIdConnectProvider:cluster.openIdConnectProvider,
+                kubectlLayer:cluster.kubectlLayer,
+                awscliLayer:cluster.awscliLayer,
+                onEventLayer:cluster.onEventLayer
+            });
+        } else {
+            const vpcAttr = typeof props.cluster.vpc === 'string' ? {
+                vpcName: props.cluster.vpc
+            } : { isDefault: true }
+            if (!props.cluster.vpc) (props.cluster) = {
+                ...props.cluster,
+                vpc: Vpc.fromLookup(this, `${id}-vpc-lookup`, vpcAttr)
+            }
+            this.root = Cluster.fromClusterAttributes(this, `${id}-imported-cluster`, props.cluster);
+        }
         if (this.hasHelmCharts) this.addHelmCharts();
         if (this.hasManifests) this.addManifests();
     }
@@ -109,5 +121,4 @@ export class ImportedCluster extends Construct {
             })
         })
     }
-
 }

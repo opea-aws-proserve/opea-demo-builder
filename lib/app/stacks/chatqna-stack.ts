@@ -2,11 +2,11 @@ import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { chatOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
-import { Cluster } from 'aws-cdk-lib/aws-eks';
+import { Cluster, ClusterAttributes } from 'aws-cdk-lib/aws-eks';
 import { ImportedCluster } from '../../construct/resources/imported';
 
 export class OpeaChatQnAStack extends Stack {
-  constructor(scope: Construct, id: string, cluster:Cluster, props?: StackProps) {
+  constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({

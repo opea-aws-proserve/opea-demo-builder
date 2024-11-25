@@ -1,0 +1,14 @@
+etc/
+assets/
+test/
+env.jest.test
+jest.config.ts
+README.md
+README.workshop.md
+package-lock.json
+cdk.context.json
+*.js
+*.d.ts 
+#node_modules/
+cdk.out/
+.DSStore/
