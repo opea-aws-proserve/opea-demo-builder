@@ -71,6 +71,7 @@ export class OpeaEksCluster extends Construct {
 
         const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
         const keyPair = process.env.EC2_SSH_KEYPAIR || (new KeyPair(this, `${id}-keypair`)).keyPairName;
+        
         this.cluster = new Cluster(this, `opea-eks-cluster`, {            
             kubectlLayer: new KubectlV31Layer(this, `${id}-kubectl-layer`),
             awscliLayer: new AwsCliLayer(this, `${id}-awscli-layer`),
@@ -155,7 +156,7 @@ export class OpeaEksCluster extends Construct {
             const usedNames:string[] = [];
             let namespace:KubernetesManifest;
             const useDefaultNamespace = this.isDefaultNamespace(container);
-            if (!this.isDefaultNamespace(container)) {
+            if (!this.isDefaultNamespace(container) && !process.env.SKIP_NAMESPACE) {
                 namespace = this.cluster.addManifest(`${container.name}-namespace`, {
                     apiVersion: "v1",
                     kind: "Namespace",
