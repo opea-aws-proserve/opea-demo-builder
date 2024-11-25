@@ -38,5 +38,7 @@ RUN npm install -g aws-cdk
 RUN rm -fr ./assets/GenaiExamples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/GenaiExamples
 RUN chmod +x "./lib/app/bin/marketplace/index.sh"
 
-ENTRYPOINT ["./lib/app/bin/marketplace/index.sh"]
+ENTRYPOINT ["/bin/bash"]
+
+CMD ["./lib/app/bin/marketplace/index.sh"]
 

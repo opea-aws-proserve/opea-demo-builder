@@ -7,6 +7,7 @@ export function setenv(): CliArgFlags {
     let flags:CliArgFlags = {}, clusterName:string = ""
     if (process.env.INSTANCE_TYPE) flags.instanceType = process.env.INSTANCE_TYPE
     if (process.env.DISK_SIZE) flags.diskSize = process.env.DISK_SIZE
+    if (process.env.SKIP_NAMESPACE) flags.SKIP_NAMESPACE = true;
     if (process.env.OPEA_MODULE) flags.module = process.env.OPEA_MODULE
     else if (process.env.MODULE) flags.module = process.env.MODULE
     if (process.env.clusterName || process.env.CLUSTER_NAME) clusterName = (process.env.clusterName || process.env.CLUSTER_NAME) as string

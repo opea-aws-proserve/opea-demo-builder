@@ -76,6 +76,7 @@ async function run(flags:CliArgFlags,args:CliArgArgs) {
         INSTANCE_TYPE:process.env.INSTANCE_TYPE,
         CLUSTER_NAME:process.env.CLUSTER_NAME || process.env.clusterName,
         DISK_SIZE:process.env.DISK_SIZE,
+        SKIP_NAMESPACE:process.env.SKIP_NAMESPACE,
         AWS_ACCESS_KEY_ID:process.env.AWS_ACCESS_KEY_ID, 
         AWS_SECRET_ACCESS_KEY:process.env.AWS_SECRET_ACCESS_KEY, 
         AWS_SESSION_TOKEN:process.env.AWS_SESSION_TOKEN, 

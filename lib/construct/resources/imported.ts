@@ -15,6 +15,7 @@ export class ImportedCluster extends Construct {
         protected props:OpeaManifestProps
     ) {
         super(scope,id);
+        if (process.env.SKIP_NAMESPACE) this.props.namespace = undefined;
         if ((props.cluster as ICluster).clusterArn) {
             const cluster = props.cluster as ICluster;
             const kubectlProvider = KubectlProvider.getOrCreate(this, cluster);
