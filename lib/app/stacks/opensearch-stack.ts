@@ -40,7 +40,7 @@ export class OpeaOpensearchStack extends Stack {
             options: {
               version: "2.25.0",
               namespace: "opensearch",
-              createNamespace: true,
+              createNamespace: !process.env.SKIP_NAMESPACE,
               values: {
                 extraEnvs: [
                   {
