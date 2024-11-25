@@ -76,7 +76,6 @@ async function run(flags:CliArgFlags,args:CliArgArgs) {
         INSTANCE_TYPE:process.env.INSTANCE_TYPE,
         CLUSTER_NAME:process.env.CLUSTER_NAME || process.env.clusterName,
         DISK_SIZE:process.env.DISK_SIZE,
-        SKIP_NAMESPACE:process.env.SKIP_NAMESPACE,
         AWS_ACCESS_KEY_ID:process.env.AWS_ACCESS_KEY_ID, 
         AWS_SECRET_ACCESS_KEY:process.env.AWS_SECRET_ACCESS_KEY, 
         AWS_SESSION_TOKEN:process.env.AWS_SESSION_TOKEN, 
@@ -84,6 +83,7 @@ async function run(flags:CliArgFlags,args:CliArgArgs) {
         HUGGING_FACE_TOKEN:process.env.HUGGING_FACE_TOKEN || process.env.HUGGINGFACEHUB_TOKEN, 
         HUGGINGFACEHUB_TOKEN:process.env.HUGGINGFACEHUB_TOKEN || process.env.HUGGING_FACE_TOKEN
     }
+    if (process.env.SKIP_NAMESPACE) envMap.SKIP_NAMESPACE = true;
     const {Account, Arn} = await getAuthenticatedAccount(envMap.AWS_REGION as string);
     const account = Account;
     if (!account) throw new Error("User must be signed in to AWS account before deploying");
