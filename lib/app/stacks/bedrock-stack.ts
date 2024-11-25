@@ -26,7 +26,7 @@ export class OpeaBedrockStack extends Stack {
           namespace:"bedrock",
           manifestFiles: [
             join(__dirname, "../manifests/bedrock.yml"),
-            join(__dirname, '../manifests/bedrock-ingress.yml')
+        //    join(__dirname, '../manifests/bedrock-ingress.yml')
           ],
           overrides:{
             ...bedrockOverrides,

@@ -30,7 +30,7 @@ export class OpeaOpensearchStack extends Stack {
           namespace: "opensearch",
           manifestFiles: [
             join(__dirname, "../manifests/opensearch.yml"),
-            join(__dirname, '../manifests/opensearch-ingress.yml')
+         //   join(__dirname, '../manifests/opensearch-ingress.yml')
           ],
           helmChart: {
             chart: {

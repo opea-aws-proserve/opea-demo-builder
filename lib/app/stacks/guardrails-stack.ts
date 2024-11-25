@@ -17,7 +17,7 @@ export class OpeaGuardrailsStack extends Stack {
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');
     }
-    const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
+  //  const manifestFiles = [join(__dirname, '../manifests/guardrails-ingress.yml')];
 
     new ImportedCluster(this, `guardrails-imported`, {
       moduleName:'ChatQnA',
@@ -26,7 +26,7 @@ export class OpeaGuardrailsStack extends Stack {
         {
           name:"chatqna-guardrails",
           overrides:guardrailOverrides,
-          manifestFiles,
+      //    manifestFiles,
           namespace:"guardrails"
         }
       ]
