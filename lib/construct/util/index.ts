@@ -117,12 +117,12 @@ export function addIngress(cluster:ICluster, namespace:string, name:string): Kub
         kind: "Ingress",
         metadata: {
             name: `${name}-ingress`,
-            namespace: namespace,
+            namespace,
             labels: {
                 "app.kubernetes.io/name": `${name}-ingress`
             },
             annotations: {
-                "alb.ingress.kubernetes.io/load-balancer-name": `${name}-ingress`,
+                "alb.ingress.kubernetes.io/load-balancer-name": `chatqna`,
                 "alb.ingress.kubernetes.io/target-type": "ip",
                 "alb.ingress.kubernetes.io/scheme": "internet-facing",
                 "alb.ingress.kubernetes.io/healthcheck-path": "/"
