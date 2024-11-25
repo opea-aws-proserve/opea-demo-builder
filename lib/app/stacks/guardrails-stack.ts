@@ -27,7 +27,7 @@ export class OpeaGuardrailsStack extends Stack {
           name:"chatqna-guardrails",
           overrides:guardrailOverrides,
       //    manifestFiles,
-          namespace:"guardrails"
+      //    namespace:"guardrails"
         }
       ]
     });

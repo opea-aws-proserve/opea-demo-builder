@@ -23,7 +23,7 @@ export class OpeaBedrockStack extends Stack {
       containers: [
         {
           name:"chatqna-bedrock",
-          namespace:"bedrock",
+        //  namespace:"bedrock",
           manifestFiles: [
             join(__dirname, "../manifests/bedrock.yml"),
         //    join(__dirname, '../manifests/bedrock-ingress.yml')

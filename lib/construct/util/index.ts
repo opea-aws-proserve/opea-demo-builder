@@ -77,40 +77,6 @@ export function pathFinder(pathName:string, $lookFor:string = 'xeon'): string | 
     return undefined;
 }
 
-
-export function addManifests(
-    moduleName:string,
-    cluster:ICluster, 
-    containers:KubernetesModuleContainer[],
-    skipPackagedManifests?:boolean) {
-    containers.forEach(container => {
-        const usedNames:string[] = [];
-        let namespace:KubernetesManifest;
-        if (container.namespace) {
-            namespace = cluster.addManifest(`${container.name}-namespace`, {
-                apiVersion: "v1",
-                kind: "Namespace",
-                metadata: {
-                    name: container.namespace
-                }
-            })
-        }
-        
-        const kb = new KubernetesModule(moduleName, {
-            container,
-            ...({skipPackagedManifests})
-        });
-
-        kb.assets.forEach(asset => {
-            asset.metadata.namespace = container.namespace || 'default';
-            if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
-            else usedNames.push(asset.metadata.name);
-            const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}`, asset);
-            if (namespace) manifest.node.addDependency(namespace);
-        })
-    });  
-}
-
 export function addIngress(cluster:ICluster, namespace:string, name:string): KubernetesManifest {
     return cluster.addManifest(`${name}-ingress`, {
         apiVersion: "networking.k8s.io/v1",

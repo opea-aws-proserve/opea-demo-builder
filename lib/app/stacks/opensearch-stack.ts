@@ -27,7 +27,7 @@ export class OpeaOpensearchStack extends Stack {
       containers: [
         {
           name:"chatqna-opensearch",
-          namespace: "opensearch",
+        //  namespace: "opensearch",
           manifestFiles: [
             join(__dirname, "../manifests/opensearch.yml"),
          //   join(__dirname, '../manifests/opensearch-ingress.yml')
@@ -39,8 +39,8 @@ export class OpeaOpensearchStack extends Stack {
             },
             options: {
               version: "2.25.0",
-              namespace: "opensearch",
-              createNamespace: !process.env.SKIP_NAMESPACE,
+            //  namespace: "opensearch",
+            //  createNamespace: !process.env.SKIP_NAMESPACE,
               values: {
                 extraEnvs: [
                   {

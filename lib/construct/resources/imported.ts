@@ -66,7 +66,7 @@ export class ImportedCluster extends Construct {
     addManifests(id:string = "") {
         if (this.props.manifestFiles || this.props.manifests) {
             const genericContainer = {
-                namespace: this.props.namespace,
+        //        namespace: this.props.namespace,
                 manifests:this.props.manifests,
                 manifestFiles:this.props.manifestFiles
             }
@@ -76,7 +76,7 @@ export class ImportedCluster extends Construct {
         this.containers.forEach(container => {
             const cluster = this.root;
             const usedNames:string[] = [];
-            let namespace:KubernetesManifest;
+        /*    let namespace:KubernetesManifest;
             if (container.namespace && !process.env.SKIP_NAMESPACE) {
                 namespace = cluster.addManifest(`${container.name}-namespace${id}`, {
                     apiVersion: "v1",
@@ -85,7 +85,7 @@ export class ImportedCluster extends Construct {
                         name: container.namespace
                     }
                 })
-            }
+            }*/
             addIngress(cluster, container.namespace || "default", container.name || "chatqna");
             const kb = new KubernetesModule(this.props.moduleName, {
                 container,
@@ -97,7 +97,7 @@ export class ImportedCluster extends Construct {
                 if (usedNames.includes(asset.metadata.name)) asset.metadata.name = `${asset.metadata.name}-${asset.kind.toLowerCase()}`
                 else usedNames.push(asset.metadata.name);
                 const manifest = cluster.addManifest(`${container.name}-${asset.kind}-${asset.metadata.name}${id}`, asset);
-                if (namespace) manifest.node.addDependency(namespace);
+        //        if (namespace) manifest.node.addDependency(namespace);
             })
         });  
     }
@@ -105,7 +105,7 @@ export class ImportedCluster extends Construct {
     addHelmCharts(id:string = "") {
         if (this.props.helmChart) {
             const genericContainer = {
-                namespace: this.props.namespace || 'default',
+            //    namespace: this.props.namespace || 'default',
                 chart: this.props.helmChart?.chart?.name,
                 chartAsset: this.props.helmChart?.asset,
                 repository: this.props.helmChart?.chart?.repo,
