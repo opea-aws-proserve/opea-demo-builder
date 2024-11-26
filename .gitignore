@@ -129,7 +129,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-*.js
+bin/*.js
+lib/**/*.js
+test/**/*.js
 !jest.config.js
 *.d.ts
 node_modules
