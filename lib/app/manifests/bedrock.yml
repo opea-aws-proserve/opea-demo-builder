@@ -454,8 +454,11 @@ spec:
         - name: chatqna-ui
           securityContext:
             {}
-          image: "opea/chatqna-ui:latest"
+          image: "public.ecr.aws/h5a9b7x0/opeastaging/chatqna-ui"
           imagePullPolicy: IfNotPresent
+          env:
+            - name: MODEL_ID
+              value: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
           ports:
             - name: ui
               containerPort: 5173

@@ -419,6 +419,9 @@ spec:
             {}
           image: "opea/chatqna-ui:latest"
           imagePullPolicy: Always
+          env:
+            - name: MODEL_ID
+              value: "Intel/neural-chat-7b-v3-3"
           ports:
             - name: ui
               containerPort: 5173
