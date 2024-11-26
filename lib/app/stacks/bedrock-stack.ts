@@ -16,7 +16,7 @@ export class OpeaBedrockStack extends Stack {
       })
     });
 
-    const importedCluster = new ImportedCluster(this, `opensearch-imported`, {
+    const importedCluster = new ImportedCluster(this, `bedrock-imported`, {
       moduleName:'ChatQnA',
       cluster,
       skipPackagedManifests: true,
