@@ -1008,6 +1008,8 @@ spec:
               value: chatqna-bedrock
             - name: LLM_SERVER_PORT
               value: "80"
+            - name: LLM_MODEL
+              value: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
             - name: RERANK_SERVER_HOST_IP
               value: chatqna-teirerank
             - name: RERANK_SERVER_PORT
