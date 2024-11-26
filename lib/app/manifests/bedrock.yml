@@ -459,6 +459,14 @@ spec:
           env:
             - name: MODEL_ID
               value: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
+            - name: CHAT_BASE_URL
+              value: "/v1/chatqna"
+            - name: UPLOAD_FILE_BASE_URL
+              value: "/v1/dataprep"
+            - name: GET_FILE
+              value: "/v1/dataprep/get_file"
+            - name: DELETE_FILE
+              value: "/v1/dataprep/delete_file"
           ports:
             - name: ui
               containerPort: 5173
