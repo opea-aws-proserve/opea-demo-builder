@@ -934,6 +934,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: chatqna-bedrock-config
+          env:
+            - name: BEDROCK_REGION
+              value: "us-west-2"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
