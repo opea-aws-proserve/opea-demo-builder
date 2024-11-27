@@ -1,4 +1,4 @@
-import { AccessEntry, AccessPolicyArn, AccessScopeType, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, ICluster, KubernetesManifest, KubernetesVersion, NodegroupAmiType } from "aws-cdk-lib/aws-eks";
+import { AccessEntry, AccessPolicyArn, AccessScopeType, Addon, AlbControllerVersion, AuthenticationMode, Cluster, DefaultCapacityType, EndpointAccess, ICluster, KubernetesManifest, KubernetesVersion, NodegroupAmiType } from "aws-cdk-lib/aws-eks";
 import { Construct } from "constructs";
 import { getClusterLogLevel } from "../util";
 import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
@@ -112,6 +112,12 @@ export class OpeaEksCluster extends Construct {
                 sshKeyName: keyPair,
                 sourceSecurityGroups: [this.securityGroup]
             }
+        });
+
+        new Addon(this, 'PodIdentityAddon', {
+            addonName: 'eks-pod-identity-agent',
+            cluster: this.cluster,
+            preserveOnDelete: false,
         });
         
         this.addAccessEntry(this.cluster);

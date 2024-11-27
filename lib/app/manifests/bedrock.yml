@@ -123,9 +123,6 @@ data:
   http_proxy: ""
   https_proxy: ""
   no_proxy: ""
-  AWS_ACCESS_KEY_ID: <aws_access_key_id>
-  AWS_SECRET_ACCESS_KEY: <aws_secret_access_key>
-  AWS_SESSION_TOKEN: <aws_session_token>
   HABANA_LOGS: "/tmp/habana_logs"
   NUMBA_CACHE_DIR: "/tmp"
   CUDA_GRAPHS: "0"
@@ -418,6 +415,17 @@ spec:
     app.kubernetes.io/name: chatqna
     app.kubernetes.io/instance: chatqna
     app: chatqna
+---
+# This is new, move it Steven
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chatqna-bedrock-sa
+  labels:
+    helm.sh/chart: bedrock-1.0.0
+    app.kubernetes.io/instance: chatqna
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
 ---
 # Source: chatqna/charts/chatqna-ui/templates/deployment.yaml
 # Copyright (C) 2024 Intel Corporation
@@ -919,6 +927,8 @@ spec:
     spec:
       securityContext:
         {}
+      # Use a service account to allow EKS pod identity to access Bedrock
+      serviceAccountName: chatqna-bedrock-sa
       containers:
         - name: bedrock
           envFrom:
