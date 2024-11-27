@@ -10,12 +10,11 @@ else
     cdk synth --quiet
     cdk bootstrap
     cdk deploy --require-approval never OpeaEksStack OpeaChatQnAStack 
+#    cdk deploy OpeaEksStack --require-approval never --method prepare-change-set --change-set-name eks-change-set
+#    cdk deploy OpeaChatQnAStack --require-approval never --method prepare-change-set --change-set-name default-change-set
     cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
     cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
     cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
-#    cdk deploy OpeaEksStack --require-approval never --method prepare-change-set --change-set-name eks-change-set
-#    cdk deploy OpeaChatQnAStack --require-approval never --method prepare-change-set --change-set-name default-change-set
-#    cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
-#   cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
-#    cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
+    cdk deploy OpeaDenvrStack --require-approval never --method prepare-change-set --change-set-name denvr-change-set
+
 fi
