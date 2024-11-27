@@ -118,7 +118,7 @@ metadata:
     app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
 data:
-  MODEL_ID: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
+  MODEL_ID: "us.anthropic.claude-3-haiku-20240307-v1:0"
   PORT: "9000"
   http_proxy: ""
   https_proxy: ""
@@ -466,7 +466,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: MODEL_ID
-              value: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
+              value: "us.anthropic.claude-3-haiku-20240307-v1:0"
             - name: CHAT_BASE_URL
               value: "/v1/chatqna"
             - name: UPLOAD_FILE_BASE_URL
@@ -1022,7 +1022,7 @@ spec:
             - name: LLM_SERVER_PORT
               value: "80"
             - name: LLM_MODEL
-              value: "us.anthropic.claude-3-5-haiku-20241022-v1:0"
+              value: "us.anthropic.claude-3-haiku-20240307-v1:0"
             - name: RERANK_SERVER_HOST_IP
               value: chatqna-teirerank
             - name: RERANK_SERVER_PORT
