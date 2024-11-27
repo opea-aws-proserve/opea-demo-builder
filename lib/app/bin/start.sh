@@ -12,7 +12,7 @@ else
     cdk deploy --require-approval never OpeaEksStack OpeaChatQnAStack
     cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
     cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
-    cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
+    cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
 #    cdk deploy --all --require-approval never --method prepare-change-set --change-set-name chatqna-change-set
 
 fi
