@@ -20,7 +20,7 @@ data:
   INDEX_NAME: "rag-redis"
   KEY_INDEX_NAME: "file-keys"
   SEARCH_BATCH_SIZE: "10"
-  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  HUGGINGFACEHUB_API_TOKEN: "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"
   HF_HOME: "/tmp/.cache/huggingface"
   http_proxy: ""
   https_proxy: ""
@@ -63,19 +63,19 @@ metadata:
     app.kubernetes.io/version: "v1.0"
     app.kubernetes.io/managed-by: Helm
 data:
-  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  HUGGINGFACEHUB_API_TOKEN: ""
   HF_HOME: "/tmp/.cache/huggingface"
   http_proxy: ""
   https_proxy: ""
   no_proxy: ""
   LOGFLAG: ""
-  vLLM_ENDPOINT: "https://erag-3.awsdevcloud.com/vllm"
-  LLM_MODEL: "meta-llama/Meta-Llama-3.1-8B-Instruct"
-  LLM_MODEL_ID: "meta-llama/Meta-Llama-3.1-8B-Instruct"
-  MODEL_ID: "meta-llama/Meta-Llama-3.1-8B-Instruct"
-  CLIENTID: "erag-3"
-  CLIENT_SECRET: "0yvb4Ts0zhlcttdktZsSWTl8AXFz8MOA"
-  TOKEN_URL: "https://erag-3.awsdevcloud.com/realms/master/protocol/openid-connect/token"
+  vLLM_ENDPOINT: "https://inference-api.cloud.denvrdata.com/Meta-Llama-3.1-70B-Instruct/"
+  LLM_MODEL: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+  LLM_MODEL_ID: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+  MODEL_ID: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+  CLIENTID: "inference-api"
+  CLIENT_SECRET: "mjvZhqCJagtkXIIyptivBgy6RAeq40lQ"
+  TOKEN_URL: "https://inference-api.cloud.denvrdata.com/token"
 ---
 # Source: chatqna/charts/reranking-usvc/templates/configmap.yaml
 # Copyright (C) 2024 Intel Corporation
@@ -122,7 +122,7 @@ data:
   https_proxy: ""
   no_proxy: ""
   HF_HOME: "/tmp/.cache/huggingface"
-  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  HUGGINGFACEHUB_API_TOKEN: "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"
   LOGFLAG: ""
 ---
 # Source: chatqna/charts/tei/templates/configmap.yaml
@@ -203,7 +203,7 @@ data:
         }
 
         location / {
-            proxy_pass http://chatqna-chatqna-ui:5173;
+            proxy_pass http://chatqna-chatqna-ui:5174;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -247,6 +247,24 @@ kind: ConfigMap
 metadata:
   name: chatqna-nginx-config
 ---
+# Source: chatqna/charts/data-prep/templates/configmap.yaml
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatqna-chatqna-ui-config
+  labels:
+    helm.sh/chart: chatqna-ui-1.0.0
+    app.kubernetes.io/name: chatqna-ui
+    app.kubernetes.io/instance: chatqna
+    app.kubernetes.io/version: "v1.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  APP_BACKEND_SERVICE_ENDPOINT: "http://35.86.224.142:8888/v1/chatqna"
+  APP_DATA_PREP_SERVICE_URL: "http://35.86.224.142:6007/v1/dataprep"
+---
 # Source: chatqna/charts/chatqna-ui/templates/service.yaml
 # Copyright (C) 2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
@@ -264,8 +282,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 5173
-      targetPort: ui
+    - port: 5174
+      targetPort: 80
       protocol: TCP
       name: ui
   selector:
@@ -552,13 +570,16 @@ spec:
         {}
       containers:
         - name: chatqna-ui
+          envFrom:
+            - configMapRef:
+                name: chatqna-chatqna-ui-config
           securityContext:
             {}
-          image: "opea/chatqna-ui:latest"
-          imagePullPolicy: Always
+          image: "opea/chatqna-ui:react"
+          imagePullPolicy: IfNotPresent
           ports:
             - name: ui
-              containerPort: 5173
+              containerPort: 5174
               protocol: TCP
           resources:
             {}
@@ -1257,7 +1278,7 @@ spec:
             - name: EMBEDDING_SERVICE_HOST_IP
               value: chatqna-embedding-usvc
             - name: MODEL_ID
-              value: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+              value: "meta-llama/Meta-Llama-3.1-70B-Instruct"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

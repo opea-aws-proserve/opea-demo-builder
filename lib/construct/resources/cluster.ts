@@ -55,6 +55,7 @@ export class OpeaEksCluster extends Construct {
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8001))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8888))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5173))
+        this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5174))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6379))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6007))
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(2021))
