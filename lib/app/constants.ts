@@ -121,7 +121,7 @@ export const bedrockOverrides = {
     ...chatOverrides,
     "chatqna-bedrock-config": {
         "data": {
-            MODEL_ID: process.env.BEDROCK_MODEL_ID || "us.anthropic.claude-3-5-haiku-20241022-v1:0",
+            MODEL_ID: process.env.BEDROCK_MODEL_ID || "us.anthropic.claude-3-haiku-20240307-v1:0",
             AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
             AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
             AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN

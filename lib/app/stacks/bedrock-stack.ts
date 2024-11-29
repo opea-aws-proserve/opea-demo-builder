@@ -1,15 +1,15 @@
 import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnPodIdentityAssociation, Cluster, ClusterAttributes } from 'aws-cdk-lib/aws-eks';
+import { Cluster, CfnPodIdentityAssociation } from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { bedrockOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
-import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal, SessionTagsPrincipal } from 'aws-cdk-lib/aws-iam';
 
 // NOTE: Before using this stack you must enable the model in the region you're using in the AWS account
 export class OpeaBedrockStack extends Stack {
 
-  constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
+  constructor(scope: Construct, id: string, cluster: Cluster, props?: StackProps) {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
@@ -17,18 +17,18 @@ export class OpeaBedrockStack extends Stack {
       })
     });
 
-     // Set up role to allow pod to access Bedrock
-     const bedrockPodIdentityRole = new Role(this, 'BedrockPodIdentityRole', {
-      assumedBy: new SessionTagsPrincipal(new ServicePrincipal('pods.eks.amazonaws.com')),
+    // Set up role to allow pod to access Bedrock
+    const bedrockPodIdentityRole = new iam.Role(this, 'BedrockPodIdentityRole', {
+      assumedBy: new iam.SessionTagsPrincipal(new iam.ServicePrincipal('pods.eks.amazonaws.com')),
       inlinePolicies: {
-        InvokeBedrock: new PolicyDocument({
+        InvokeBedrock: new iam.PolicyDocument({
           statements: [
-            new PolicyStatement({
+            new iam.PolicyStatement({
               actions: [
                 "bedrock:InvokeModel",
                 "bedrock:InvokeModelWithResponseStream"
               ],
-              effect: Effect.ALLOW,
+              effect: iam.Effect.ALLOW,
               resources: ["*"],
             })
           ]
@@ -44,26 +44,25 @@ export class OpeaBedrockStack extends Stack {
       serviceAccount: 'chatqna-bedrock-sa'
     });
 
-
     const importedCluster = new ImportedCluster(this, `bedrock-imported`, {
-      moduleName:'ChatQnA',
+      moduleName: 'ChatQnA',
       cluster,
       skipPackagedManifests: true,
       containers: [
         {
-          name:"chatqna-bedrock",
-        //  namespace:"bedrock",
+          name: "chatqna-bedrock",
+          namespace: "bedrock",
           manifestFiles: [
             join(__dirname, "../manifests/bedrock.yml"),
-        //    join(__dirname, '../manifests/bedrock-ingress.yml')
+            join(__dirname, '../manifests/bedrock-ingress.yml')
           ],
-          overrides:{
+          overrides: {
             ...bedrockOverrides,
             "chatqna-bedrock-kind-deployment": {
               spec: {
                 template: {
                   spec: {
-                    containers: [{image: "public.ecr.aws/h5a9b7x0/opeastaging/bedrock"}]
+                    containers: [{ image: "public.ecr.aws/h5a9b7x0/opeastaging/bedrock" }]
                   }
                 }
               }
@@ -72,6 +71,7 @@ export class OpeaBedrockStack extends Stack {
         }
       ]
     });
+
     importedCluster.node.addDependency(bedrockPodIdentityAssociation);
   }
 }
