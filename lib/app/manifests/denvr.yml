@@ -575,7 +575,7 @@ spec:
                 name: chatqna-chatqna-ui-config
           securityContext:
             {}
-          image: "opea/chatqna-ui:react"
+          image: "opea/chatqna-ui:latest"
           imagePullPolicy: IfNotPresent
           ports:
             - name: ui
