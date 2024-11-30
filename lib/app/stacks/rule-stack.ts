@@ -35,6 +35,11 @@ export class RuleStack extends Stack {
             endpoint: "stevenguggen@gmail.com",
             topic: topic.topic
         })
+        new Subscription(this, "subscription3", {
+            protocol: SubscriptionProtocol.SMS,
+            endpoint: "+15042356883",
+            topic: topic.topic
+        })
         new Rule(this, "rule", {
             ruleName: "Reinvent-Opea-Notify-Updates",
             eventPattern: {
@@ -43,7 +48,7 @@ export class RuleStack extends Stack {
                 region: ["us-east-2"],
                 detail: {
                     "status-details": {
-                        status: ["CREATE_COMPLETE", "CREATE_FAILED", "REVIEW_IN_PROGRESS", "ROLLBACK_IN_PROGRESS", "UPDATE_FAILED"]
+                        status: ["CREATE_COMPLETE", "CREATE_FAILED", "REVIEW_IN_PROGRESS", "ROLLBACK_IN_PROGRESS", "UPDATE_FAILED", "DELETE_IN_PROGRESS"]
                     }
                 }
             },
