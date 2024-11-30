@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: denvr-ingress
-  namespace: remote_inference
+  namespace: remote-inference
   labels:
     app.kubernetes.io/name: denvr-ingress
   annotations:

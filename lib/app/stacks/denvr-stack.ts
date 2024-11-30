@@ -23,7 +23,7 @@ export class OpeaDenvrStack extends Stack {
       containers: [
         {
           name: "chatqna-denvr",
-          namespace: "remote_inference",
+          namespace: "remote-inference",
           manifestFiles: [
             join(__dirname, "../manifests/denvr.yml"),
             join(__dirname, '../manifests/denvr-ingress.yml')
