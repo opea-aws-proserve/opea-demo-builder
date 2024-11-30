@@ -1,6 +1,6 @@
 export const HuggingFaceToken = process.env.HUGGING_FACE_TOKEN || process.env.HUGGINGFACEHUB_API_TOKEN || ""
 
-const nginxOverride = {
+export const nginxOverride = {
     "chatqna-nginx-config": {
         data: {
             "default.conf": `  
