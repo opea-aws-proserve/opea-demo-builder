@@ -10,6 +10,9 @@ import { NodeProxyAgentLayer } from "aws-cdk-lib/lambda-layer-node-proxy-agent";
 import { KubectlV31Layer } from "@aws-cdk/lambda-layer-kubectl-v31";
 import { KubernetesModule } from "../modules/kubernetes-module";
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
+import { EventField, Rule, RuleTargetInput } from "aws-cdk-lib/aws-events";
+import { SnsTopic } from "aws-cdk-lib/aws-events-targets";
+import { Subscription, SubscriptionProtocol, Topic } from "aws-cdk-lib/aws-sns";
 
 export class OpeaEksCluster extends Construct {
     cluster: Cluster;
