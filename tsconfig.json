@@ -25,6 +25,10 @@
       "./node_modules/@types"
     ]
   },
+  "include": [
+    "lib",
+    "bin"
+  ],
   "exclude": [
     "node_modules",
     "assets/GenaiExamples",
