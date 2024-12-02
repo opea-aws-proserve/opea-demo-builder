@@ -6,7 +6,7 @@ import { OpeaGuardrailsStack } from '../lib/app/stacks/guardrails-stack';
 import { OpeaChatQnAStack } from '../lib/app/stacks/chatqna-stack';
 import { OpeaOpensearchStack } from '../lib/app/stacks/opensearch-stack';
 import { OpeaBedrockStack } from '../lib/app/stacks/bedrock-stack';
-import { OpeaDenvrStack } from '../lib/app/stacks/denvr-stack';
+import { OpeaRemoteInferenceStack } from '../lib/app/stacks/denvr-stack';
 
 const app = new App();
 
@@ -23,7 +23,7 @@ const chat = new OpeaChatQnAStack(app, 'OpeaChatQnAStack', eks.root.cluster, sta
 const guardrails = new OpeaGuardrailsStack(app, 'OpeaGuardrailsStack', eks.root.cluster, stackProps);
 const opensearch = new OpeaOpensearchStack(app, 'OpeaOpensearchStack', eks.root.cluster, stackProps);
 const bedrock = new OpeaBedrockStack(app, "OpeaBedrockStack", eks.root.cluster, stackProps);
-const denvr = new OpeaDenvrStack(app, "OpeaDenvrStack", eks.root.cluster, stackProps);
+const denvr = new OpeaRemoteInferenceStack(app, "OpeaRemoteInferenceStack", eks.root.cluster, stackProps);
 
 chat.addDependency(eks);
 guardrails.addDependency(eks);
