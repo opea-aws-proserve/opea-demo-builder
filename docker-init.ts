@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-import { spawn } from "child_process";
+
 import CliArgs, { CliArgArgs, CliArgFlags } from "./lib/app/bin/cli-args";
-import { join } from "path";
-import { existsSync, readFileSync } from "fs";
-import { merge } from "lodash";
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
 import { GetCallerIdentityCommand, STSClient } from "@aws-sdk/client-sts";
-let {flags,args} = CliArgs.Get();
+import { spawn } from "child_process";
+import { join } from "path";
 
+const {flags,args} = CliArgs.Get();
 async function getAuthenticatedAccount(region:string):Promise<any> {
     const client = new STSClient({
         region
@@ -29,7 +28,7 @@ function setRoleInfo(arn:string) {
 function addEnv(env:Record<string,string |undefined>, skipMutate?:boolean): string[] {
     const $cmds:string[] = [];
     Object.keys(env).forEach(e => {
-        $cmds.push(`-e`);
+
         let key:string;
         if (!skipMutate) {
             const indexOf = e.indexOf("_");
@@ -41,30 +40,14 @@ function addEnv(env:Record<string,string |undefined>, skipMutate?:boolean): stri
             }
         } else key = e
         if (typeof env[e] === "undefined") env[e] = "";
-        $cmds.push(`${key}=${env[e]}`);
+        process.env[key] = env[e];
     });
     return $cmds;
 }
 
 async function run(flags:CliArgFlags,args:CliArgArgs) {
     fromNodeProviderChain();
-    const container = args.shift();
-    const cmds:string[] = ["run"];
-    if (flags.d || flags.detach) {
-        cmds.push('-d');
-        delete flags.d;
-        delete flags.detach;
-    }
-    if (flags.i || flags.interactive) {
-        cmds.push('-i');
-        delete flags.i;
-        delete flags.interactive;
-    }
-    if (flags.t || flags.tty) {
-        cmds.push('-t');
-        delete flags.t;
-        delete flags.tty;
-    }
+   
     const envMap:any = {
         AWS_REGION:process.env.AWS_REGION || process.env.REGION || process.env.AWS_DEFAULT_REGION || process.env.CDK_DEFAULT_REGION,
         AWS_ROLE_ARN:process.env.AWS_ROLE_ARN,
@@ -89,24 +72,11 @@ async function run(flags:CliArgFlags,args:CliArgArgs) {
     if (!account) throw new Error("User must be signed in to AWS account before deploying");
     envMap.AWS_ACCOUNT = account;
     setRoleInfo(Arn);
-    // if (!envMap.AWS_ACCESS_KEY_ID) console.log("WARNING: AWS Account environment variables not set")
-    const groupa = addEnv(flags);
-    const groupb = addEnv(envMap, true);
-    cmds.push(...groupa, ...groupb);
-    spawn("docker", [ ...cmds, container as string, ...(args as string[]) ], {stdio:"inherit"});    
+    addEnv(flags);
+    addEnv(envMap, true);
+  
 }
 
-const jsonPath = join(process.cwd(), "opea.config.json");
-const tsPath = join(process.cwd(), "opea.config.ts");
-if (existsSync(jsonPath)) {
-    const json = readFileSync(jsonPath, "utf8");
-    const jsonconfig = JSON.parse(json);
-    flags = merge(jsonconfig,flags);
-}
-if (existsSync(tsPath)) {
-    import(tsPath).then((config) => {
-        const def = config.default || {}
-        const newflags = merge(flags, {...def,...config});
-        run(newflags, args);
-    }).catch(e => {throw e;})
-} else run(flags, args);
+run(flags,args)
+const init = join(__dirname, "lib/app/bin/marketplace/index.sh")
+spawn(init, {stdio:"inherit"});

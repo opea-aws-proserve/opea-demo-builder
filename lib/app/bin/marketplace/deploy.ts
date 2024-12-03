@@ -9,6 +9,7 @@ import { OpeaChatQnAStack } from '../../stacks/chatqna-stack';
 import { OpeaOpensearchStack } from '../../stacks/opensearch-stack';
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
+import { OpeaBedrockStack } from '../../stacks/bedrock-stack';
 
 async function getAuthenticatedAccount(region:string):Promise<any> {
     const client = new STSClient({
@@ -63,6 +64,7 @@ export async function deploy(flags:CliArgFlags, args:CliArgArgs) {
         break;
         case "redis": stack = new OpeaChatQnAStack(app, 'OpeaChatQnARedisStack', cluster, stackProps);
         break;
+        case "bedrock": stack = new OpeaBedrockStack(app, 'OpeaChatQnARedisStack', cluster, stackProps);
         default: stack = new OpeaOpensearchStack(app, 'OpeaChatQnAOpensearchStack', cluster, stackProps);
         break;
     }

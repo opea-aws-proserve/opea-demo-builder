@@ -143,3 +143,5 @@ cdk.context.json
 gitpod.yml
 /workshop
 /assets/GenAIExamples
+.gitpod.yml
+opea.env

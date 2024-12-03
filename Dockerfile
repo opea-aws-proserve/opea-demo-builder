@@ -12,17 +12,18 @@ ARG MODEL_ID
 ARG INSTANCE_TYPE
 ARG CLUSTER_NAME
 ARG DISK_SIZE
+ARG clusterName
+ARG clusterCertificateAuthorityData,
+ARG clusterEncryptionConfigKeyArn
+ARG clusterEndpoint, 
+ARG clusterHandlerSecurityGroupId
+ARG clusterSecurityGroupId,
+ARG kubectlRoleArn
+ARG kubectlSecurityGroupId
+ARG vpc
+ARG securityGroupIds
+ARG kubectlPrivateSubnetIds
 
-ENV AWS_REGION=$AWS_REGION
-ENV AWS_ROLE_ARN=$AWS_ROLE_ARN
-ENV OPEA_ROLE_ARN=$OPEA_ROLE_ARN
-ENV OPEA_ROLE_NAME=$OPEA_ROLE_NAME
-ENV OPEA_USER=$OPEA_USER
-ENV MODEL_ID=$MODEL_ID
-
-ENV INSTANCE_TYPE=$INSTANCE_TYPE
-ENV CLUSTER_NAME=$CLUSTER_NAME
-ENV DISK_SIZE=$DISK_SIZE
 
 RUN --mount=type=secret,id=aws-key-id,env=AWS_ACCESS_KEY_ID \
     --mount=type=secret,id=aws-secret-key,env=AWS_SECRET_ACCESS_KEY \
@@ -32,13 +33,15 @@ RUN --mount=type=secret,id=aws-key-id,env=AWS_ACCESS_KEY_ID \
     --mount=type=secret,id=huggingfacehub-token,env=HUGGINGFACEHUB_TOKEN 
 
 COPY . .
+RUN curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
 RUN npm install
 RUN npm run build
 RUN npm install -g aws-cdk
+RUN npm link
 RUN rm -fr ./assets/GenaiExamples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/GenaiExamples
 RUN chmod +x "./lib/app/bin/marketplace/index.sh"
 
-ENTRYPOINT ["/bin/bash"]
-
-CMD ["./lib/app/bin/marketplace/index.sh"]
+CMD ["npx", "ts-node", "./docker-init.js"]
 

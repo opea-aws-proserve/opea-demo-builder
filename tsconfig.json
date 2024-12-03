@@ -28,6 +28,7 @@
   "exclude": [
     "node_modules",
     "assets/GenaiExamples",
-    "cdk.out"
+    "cdk.out",
+    "etc"
   ]
 }

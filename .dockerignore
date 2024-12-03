@@ -9,6 +9,8 @@ package-lock.json
 cdk.context.json
 *.js
 *.d.ts 
-#node_modules/
+node_modules/
 cdk.out/
 .DSStore/
+.gitpod.yml
+opea.env

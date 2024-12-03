@@ -7,11 +7,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "copy-repo": "ts-node ./lib/app/bin/copy-repo.ts",
-    "opea": "ts-node ./docker-run.ts"
-  },
-  "bin": {
-    "opea": "./lib/app/bin/run.ts"
+    "copy-repo": "ts-node ./lib/app/bin/copy-repo.ts"
+    
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",

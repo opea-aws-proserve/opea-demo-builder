@@ -69,7 +69,12 @@ export class OpeaEksCluster extends Construct {
         this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(9600))
         this.securityGroup.connections.allowFrom(Peer.prefixList(this.getPrefixListId()), Port.allTcp());
 
-        const instanceType = props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
+        let instanceType = process.env.INSTANCE_TYPE ? new InstanceType(process.env.INSTANCE_TYPE) : props.instanceType || InstanceType.of(InstanceClass.M7I, InstanceSize.XLARGE24);
+        if (!(/(m7i|c7i|r7i)/i.test(instanceType.toString()))) {
+            const [type,size] = instanceType.toString().split(".");
+            console.log(`Instance type ${type} is not supported. Please use an Intel Xeon instance type.`)
+            instanceType = new InstanceType(`m7i.${size}`);
+        }
         const keyPair = process.env.EC2_SSH_KEYPAIR || (new KeyPair(this, `${id}-keypair`)).keyPairName;
         
         this.cluster = new Cluster(this, `opea-eks-cluster`, {            
