@@ -4,6 +4,11 @@ import { Asset } from "aws-cdk-lib/aws-s3-assets"
 
 
 export interface OpeaEksProps {
+    principals?: {
+        role?:string
+        user?:string
+        arn?:string
+    }
     moduleName: string
     modelId?:string
     containers?:KubernetesModuleContainer[]
@@ -21,7 +26,6 @@ export interface OpeaEksProps {
     logLevel?: string
     instanceType?: InstanceType
     additionalInstanceTypes?: InstanceType[]
-    principal?:string
     nodeGroupDiskSize?:number
     moduleOptions?: KubernetesModuleOptions
     defaultNamespace?:string

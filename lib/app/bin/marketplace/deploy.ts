@@ -20,14 +20,15 @@ async function getAuthenticatedAccount(region:string):Promise<any> {
     return response
 }
 
-function setRoleInfo(arn:string) {
+function setRoleInfo(arn:string):Record<string,string> {
     if (arn.indexOf("assumed-role") > -1) {
-        if (!process.env.OPEA_USER && !process.env.OPEA_ROLE_NAME) {
-            throw new Error("Since you're using an assumed role, you must either set the value of the OPEA_USER environment variable to the username that is the principal of your assumed role's trust policy or set the value of OPEA_ROLE_NAME to the name of the IAM role that you're assuming.");
-        }
-        return;
-    }
-    process.env.OPEA_ROLE_ARN = arn;
+        const roles = arn.split("/");
+        const ind = roles.findIndex((v) => v.endsWith("assumed-role"));
+        if (ind < 0) throw new Error("Unable to determine assumed role");
+        const rolename = roles[ind + 1];
+        if (!rolename) throw new Error("Unable to determine assumed role");
+        return {role: rolename};
+    } else return { arn };
 }
 
 export async function deploy(flags:CliArgFlags, args:CliArgArgs) {
@@ -41,7 +42,9 @@ export async function deploy(flags:CliArgFlags, args:CliArgArgs) {
     const account = Account;
     process.env.AWS_ACCOUNT = account;
 
-    setRoleInfo(Arn);
+    const principals = setRoleInfo(Arn);
+    if (principals.role) process.env.OPEA_ROLE_NAME = principals.role;
+    else if (principals.arn) process.env.OPEA_ROLE_ARN = principals.arn;
     const stackProps = {
       env: { account, region }
     }

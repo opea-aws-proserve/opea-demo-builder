@@ -17,7 +17,6 @@ AWS_REGION=<your region>
 AWS_ACCESS_KEY_ID=<your id>
 AWS_SECRET_ACCESS_KEY=<your secret>"
 AWS_SESSION_TOKEN=<your token (if assuming a role)>
-OPEA_ROLE_NAME=<your role name>
 HUGGING_FACE_TOKEN=<your token>
 ```
 *NOTE: There are sensitive values in this file that should not be shared. Do not copy this file beyond your local drive.*
@@ -34,7 +33,6 @@ HUGGING_FACE_TOKEN=<your token>
 - **AWS_ACCESS_KEY_ID** - The access key for the user or role you'll be assuming in the AWS account.
 - **AWS_SECRET_ACCESS_KEY** - The secret for the user of role you'll be assuming in the AWS account. If you're authenticating as an AWS user, these two values will suffice, but if you're assuming a role, you'll also need to set the **AWS_SESSION_TOKEN** parameter.
 *WARNING: Make sure to protect your Access Key and secret values as they are highly sensitive. Be careful not to expose them in any insecure ways*
-- **OPEA_ROLE_NAME** or **OPEA_USER** - This will be used for EKS Access Entry, so Without a valid value here you won't be able to see inside the EKS cluster. If you are authenticating as an AWS user, supply just your user name (as opposed to the entire ARN) to *OPEA_USER**, if you're assuming an AWS IAM role, check the ARN of the role. If it looks like this: `arn:aws:iam::123456789012:role/ROLENAME`, then supply the `ROLENAME` to **OPEA_ROLE_NAME**. But if the ARN looks like this: `arn:aws:sts::123456789012:assumed-role/ROLENAME`, then get the user name (again, not the ARN) from the role's trust policy and add as **OPEA_USER**.
 **HUGGING_FACE_TOKEN** - A valid token for Hugging Face scoped to use the models in your package. The default models are scoped to your token by default, but if you want to use `guardrails` with the default settings, you'll have to add the `meta-llama/Meta-Llama-Guard-2-8B` to your token scope.
 
 ### Optional Parameters

@@ -15,18 +15,20 @@ async function getAuthenticatedAccount(region:string):Promise<any> {
     const response = await client.send(command);
     return response
 }
-function setRoleInfo(arn:string) {
+
+function setRoleInfo(arn:string):Record<string,string> {
     if (arn.indexOf("assumed-role") > -1) {
-        if (!process.env.OPEA_USER && !process.env.OPEA_ROLE_NAME) {
-            throw new Error("Since you're using an assumed role, you must either set the value of the OPEA_USER environment variable to the username that is the principal of your assumed role's trust policy or set the value of OPEA_ROLE_NAME to the name of the IAM role that you're assuming.");
-        }
-        return;
-    }
-    process.env.OPEA_ROLE_ARN = arn;
+        const roles = arn.split("/");
+        const ind = roles.findIndex((v) => v.endsWith("assumed-role"));
+        if (ind < 0) throw new Error("Unable to determine assumed role");
+        const rolename = roles[ind + 1];
+        if (!rolename) throw new Error("Unable to determine assumed role");
+        return {role: rolename};
+    } else return { arn };
 }
 
-function addEnv(env:Record<string,string |undefined>, skipMutate?:boolean): string[] {
-    const $cmds:string[] = [];
+function addEnv(env:Record<string,string |undefined>, skipMutate?:boolean): Record<string,any> {
+    const obj:Record<string,any> = {}
     Object.keys(env).forEach(e => {
 
         let key:string;
@@ -40,9 +42,9 @@ function addEnv(env:Record<string,string |undefined>, skipMutate?:boolean): stri
             }
         } else key = e
         if (typeof env[e] === "undefined") env[e] = "";
-        process.env[key] = env[e];
+        obj[key] = env[e];
     });
-    return $cmds;
+    return obj;
 }
 
 async function run(flags:CliArgFlags,args:CliArgArgs) {
@@ -71,12 +73,12 @@ async function run(flags:CliArgFlags,args:CliArgArgs) {
     const account = Account;
     if (!account) throw new Error("User must be signed in to AWS account before deploying");
     envMap.AWS_ACCOUNT = account;
-    setRoleInfo(Arn);
-    addEnv(flags);
-    addEnv(envMap, true);
-  
+    const principals = setRoleInfo(Arn);
+    if (principals.role) envMap.OPEA_ROLE_NAME = principals.role;
+    else if (principals.arn) envMap.OPEA_ROLE_ARN = principals.arn;
+    process.env = {...addEnv(flags), ...addEnv(envMap, true), ...(process.env)};
+    const init = join(__dirname, "lib/app/bin/marketplace/index.sh")
+    spawn(init, {stdio:"inherit"});
 }
 
 run(flags,args)
-const init = join(__dirname, "lib/app/bin/marketplace/index.sh")
-spawn(init, {stdio:"inherit"});

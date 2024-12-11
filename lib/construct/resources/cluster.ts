@@ -214,7 +214,6 @@ export class OpeaEksCluster extends Construct {
                 policy: AccessPolicyArn.AMAZON_EKS_ADMIN_POLICY.policyArn
             }
         ]
-
         const AWS_ROLE_ARN = process.env.AWS_ROLE_ARN;
         const addlPrincipals = process.env.OPEA_ROLE_ARN || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
@@ -225,7 +224,8 @@ export class OpeaEksCluster extends Construct {
         if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
 
         if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
-        if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USER environment variable.")
+        if (!principals.length) throw new Error("Need at least one principal to access cluster.")
+        
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
                 cluster,
