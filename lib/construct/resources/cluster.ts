@@ -37,8 +37,7 @@ export class OpeaEksCluster extends Construct {
                 BriefingFlowLogs: {
                     destination: FlowLogDestination.toCloudWatchLogs()
                 }
-            },
-            availabilityZones: ['us-east-2a', 'us-east-2b', 'us-east-2c']
+            }
         })
         if (props.securityGroup) this.securityGroup = props.securityGroup;
         else {
