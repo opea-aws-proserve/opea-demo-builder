@@ -2,7 +2,7 @@
 
 import { copyFileSync, cpSync, existsSync, mkdirSync, rmdirSync, writeFileSync } from "fs";
 import { join } from "path";
-import * as packagejson from "../../../package.json";
+import * as packagejson from "../../../package.json"; 
 
 const pkg:any = {...packagejson};
 
