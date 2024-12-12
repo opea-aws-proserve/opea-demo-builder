@@ -214,12 +214,12 @@ export class OpeaEksCluster extends Construct {
         const addlPrincipals = process.env.OPEA_ROLE_ARN || "";
         const roleNames = process.env.OPEA_ROLE_NAME || "";
         const users = process.env.OPEA_USER || "";
-        let principals = addlPrincipals.split(',').map(a => a.trim());
+        let principals = addlPrincipals.split(',').map(a => this.arnify(a.trim()));
         if (!principals[0])principals = [];
-        if (roleNames) principals.push(...(roleNames.split(",").map(b => `arn:aws:iam::${Stack.of(this).account}:role/${b.trim()}`)));
-        if (users) principals.push(...(users.split(",").map(c => `arn:aws:iam::${Stack.of(this).account}:user/${c.trim()}`)));
+        if (roleNames) principals.push(...(roleNames.split(",").map(b => this.arnify(b.trim()))));
+        if (users) principals.push(...(users.split(",").map(c => this.arnify(c.trim()))));
 
-        if (AWS_ROLE_ARN) principals.unshift(AWS_ROLE_ARN);
+        if (AWS_ROLE_ARN) principals.unshift(this.arnify(AWS_ROLE_ARN));
         if (!principals.length) throw new Error("Need at least one principal to access cluster. Set OPEA_ROLE_NAME or OPEA_USER environment variable.")
         principals.forEach((principal,index) => {
             new AccessEntry(this, `${this.id}-access-entry-${index}`, {
@@ -229,5 +229,10 @@ export class OpeaEksCluster extends Construct {
                 accessPolicies
             });
         });
+    }
+
+    arnify(str:string, service:string = "iam", resource:string = "role"):string {
+        if (str.startsWith("arn:")) return str;
+        return `arn:aws:${service}::${Stack.of(this).account}:${resource}/${str}`
     }
 }
