@@ -37,8 +37,8 @@ export class OpeaEksCluster extends Construct {
                 BriefingFlowLogs: {
                     destination: FlowLogDestination.toCloudWatchLogs()
                 }
-            },
-            availabilityZones: ['us-east-2a', 'us-east-2b', 'us-east-2c']
+            }
+
         })
         if (props.securityGroup) this.securityGroup = props.securityGroup;
         else {
@@ -107,9 +107,6 @@ export class OpeaEksCluster extends Construct {
             instanceTypes: [instanceType, ...(props.additionalInstanceTypes || [])],
             desiredSize: 1,
             maxSize: 1,
-            subnets: this.vpc.selectSubnets({
-                availabilityZones: ['us-east-2c']
-            }),
             amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
             diskSize: props.nodeGroupDiskSize || 500,
             nodegroupName: `${id}-node-group`,
