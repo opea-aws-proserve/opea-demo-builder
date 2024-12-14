@@ -2,11 +2,7 @@
 
 export OPEA_DEMO_BUILDER="https://github.com/opea-aws-proserve/opea-demo-builder.git"
 rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/GenaiExamples
-#export OPEA_ROLE_ARN=$OPEA_ROLE_ARN
-#export OPEA_ROLE_NAME=$OPEA_ROLE_NAME
-#export OPEA_USER=$OPEA_USER
-#export HUGGINGFACEHUB_API_TOKEN=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
-                  "chmod +x ./lib/app/bin/start.sh",
+chmod +x ./lib/app/bin/start.sh
 cdk synth --quiet
 cdk bootstrap --template ./lib/app/assets/templates/bootstrap-custom.yml
 cdk deploy --require-approval never OpeaEksStack OpeaChatQnAStack

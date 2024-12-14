@@ -37,6 +37,11 @@ Parameters:
     # account = 12, region <= 14, 10 chars for qualifier and 28 for rest of role name
     AllowedPattern: "[A-Za-z0-9_-]{1,10}"
     ConstraintDescription: Qualifier must be an alphanumeric identifier of at most 10 characters
+  PublicAccessBlockConfiguration:
+    Description: Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+    Default: 'false'
+    Type: 'String'
+    AllowedValues: ['true', 'false']
   InputPermissionsBoundary:
     Description: Whether or not to use either the CDK supplied or custom permissions boundary
     Default: ''
@@ -100,6 +105,10 @@ Conditions:
       - Fn::Equals:
           - ''
           - Ref: ContainerAssetsRepositoryName
+  UsePublicAccessBlockConfiguration:
+    Fn::Equals:
+      - 'true'
+      - Ref: PublicAccessBlockConfiguration
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -186,6 +195,14 @@ Resources:
                     - UseAwsManagedKey
                     - Ref: AWS::NoValue
                     - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+      PublicAccessBlockConfiguration:
+        Fn::If:
+          - UsePublicAccessBlockConfiguration
+          - BlockPublicAcls: true
+            BlockPublicPolicy: true
+            IgnorePublicAcls: true
+            RestrictPublicBuckets: true
+          - Ref: AWS::NoValue
       VersioningConfiguration:
         Status: Enabled
       LifecycleConfiguration:
