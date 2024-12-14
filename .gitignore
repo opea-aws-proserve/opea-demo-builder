@@ -144,3 +144,4 @@ cdk.context.json
 !env.jest.js
 gitpod.yml
 /workshop
+opea.env
