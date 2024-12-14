@@ -8,7 +8,7 @@ rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenA
 #export HUGGINGFACEHUB_API_TOKEN=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
                   "chmod +x ./lib/app/bin/start.sh",
 cdk synth --quiet
-cdk bootstrap
+cdk bootstrap --template ./lib/app/assets/templates/bootstrap-custom.yml
 cdk deploy --require-approval never OpeaEksStack OpeaChatQnAStack
 cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
 cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
