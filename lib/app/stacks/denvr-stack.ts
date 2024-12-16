@@ -1,4 +1,4 @@
-import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
+import { BootstraplessSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
 import { nginxOverride } from '../constants';
@@ -11,9 +11,7 @@ export class OpeaRemoteInferenceStack extends Stack {
   constructor(scope: Construct, id: string, cluster: Cluster, props?: StackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new DefaultStackSynthesizer({
-        generateBootstrapVersionRule: false
-      })
+      synthesizer: new BootstraplessSynthesizer()
     });
 
     new ImportedCluster(this, `remote-inference-imported`, {
