@@ -1,4 +1,4 @@
-import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { BootstraplessSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Addon, CfnAddon, Cluster, ClusterAttributes, ICluster } from 'aws-cdk-lib/aws-eks';
 import { HuggingFaceToken, opensearchOverrides } from '../constants';
@@ -11,9 +11,7 @@ export class OpeaOpensearchStack extends Stack {
   constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new DefaultStackSynthesizer({
-        generateBootstrapVersionRule: false
-      })
+      synthesizer: new BootstraplessSynthesizer()
     });
     if (!HuggingFaceToken) {
       throw new Error('Please add HUGGING_FACE_TOKEN environment variable');

@@ -1,4 +1,4 @@
-import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
+import { BootstraplessSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { guardrailOverrides, HuggingFaceToken } from '../constants';
 import { join } from 'path';
@@ -9,9 +9,7 @@ export class OpeaGuardrailsStack extends Stack {
   constructor(scope: Construct, id: string, cluster:Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new DefaultStackSynthesizer({
-        generateBootstrapVersionRule: false
-      })
+      synthesizer: new BootstraplessSynthesizer()
     });
     
     if (!HuggingFaceToken) {
