@@ -2,7 +2,7 @@
 
 STACK_OPERATION=$1
 
-if [[ "$STACK_OPERATION" == "create" || "$STACK_OPERATION" == "update" ]]; then
+if [[ "$STACK_OPERATION" == "Create" || "$STACK_OPERATION" == "Update" ]]; then
     npm install;
     npm run build;
     export OPEA_DEMO_BUILDER="https://github.com/opea-aws-proserve/opea-demo-builder.git"
@@ -16,6 +16,6 @@ if [[ "$STACK_OPERATION" == "create" || "$STACK_OPERATION" == "update" ]]; then
     cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
     cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
     cdk deploy OpeaRemoteInferenceStack --require-approval never --method prepare-change-set --change-set-name denvr-change-set
-elif [ "$STACK_OPERATION" == "delete" ]; then
+elif [ "$STACK_OPERATION" == "Delete" ]; then
     cdk destroy --force --all
 fi
