@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 STACK_OPERATION=$1
-npm install;
-npm run build;
-if [ "$STACK_OPERATION" == "delete" ]; then
-    cdk destroy --force --all
-else
+
+if [[ "$STACK_OPERATION" == "create" || "$STACK_OPERATION" == "update" ]]; then
+    npm install;
+    npm run build;
     export OPEA_DEMO_BUILDER="https://github.com/opea-aws-proserve/opea-demo-builder.git"
     export AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
     cdk synth --quiet
@@ -17,5 +16,6 @@ else
     cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
     cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
     cdk deploy OpeaRemoteInferenceStack --require-approval never --method prepare-change-set --change-set-name denvr-change-set
-
+elif [ "$STACK_OPERATION" == "delete" ]; then
+    cdk destroy --force --all
 fi
