@@ -1,4 +1,4 @@
-import { BootstraplessSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
+import { DefaultStackSynthesizer,  Stack, StackProps } from 'aws-cdk-lib';
 import { OpeaEksCluster } from '../../construct/resources/cluster';
 import { Construct } from 'constructs';
 
@@ -8,7 +8,9 @@ export class OpeaEksStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new BootstraplessSynthesizer()
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false
+      })
     });
     
     this.root = new OpeaEksCluster(this, "OpeaEksCluster", {
