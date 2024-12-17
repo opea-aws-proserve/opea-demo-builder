@@ -10,7 +10,7 @@ export class OpeaGuardrailsStack extends Stack {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
-        generateBootstrapVersionRule: false
+//        generateBootstrapVersionRule: false      
       })
     });
     
