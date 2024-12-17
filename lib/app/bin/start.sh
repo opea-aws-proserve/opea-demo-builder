@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export OPEA_DEMO_BUILDER="https://github.com/opea-aws-proserve/opea-demo-builder.git"
+export AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 rm -fr ./assets/genai-examples && git clone https://github.com/opea-project/GenAIExamples.git ./assets/GenaiExamples
 chmod +x ./lib/app/bin/start.sh
 cdk synth --quiet

@@ -13,7 +13,7 @@ export class OpeaBedrockStack extends Stack {
     super(scope, id, {
       ...props,
       synthesizer: new DefaultStackSynthesizer({
-        generateBootstrapVersionRule: false
+  //      generateBootstrapVersionRule: false
       })
     });
 
