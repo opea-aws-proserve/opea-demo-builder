@@ -1,4 +1,4 @@
-import { BootstraplessSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { DefaultStackSynthesizer, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Cluster, CfnPodIdentityAssociation, ClusterAttributes } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -12,7 +12,9 @@ export class OpeaBedrockStack extends Stack {
   constructor(scope: Construct, id: string, cluster: Cluster | ClusterAttributes, props?: StackProps) {
     super(scope, id, {
       ...props,
-      synthesizer: new BootstraplessSynthesizer()
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false
+      })
     });
 
     // Set up role to allow pod to access Bedrock
