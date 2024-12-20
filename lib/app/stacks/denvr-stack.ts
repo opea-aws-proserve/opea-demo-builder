@@ -1,7 +1,7 @@
 import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
-import { nginxOverride } from '../constants';
+import { denvrOverrides } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
 
@@ -28,7 +28,7 @@ export class OpeaRemoteInferenceStack extends Stack {
             join(__dirname, "../manifests/denvr.yml"),
             join(__dirname, '../manifests/denvr-ingress.yml')
           ],
-          overrides: nginxOverride
+          overrides: denvrOverrides 
         }
       ]
     });

@@ -20,7 +20,7 @@ data:
   INDEX_NAME: "rag-redis"
   KEY_INDEX_NAME: "file-keys"
   SEARCH_BATCH_SIZE: "10"
-  HUGGINGFACEHUB_API_TOKEN: "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"
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
   HF_HOME: "/tmp/.cache/huggingface"
   http_proxy: ""
   https_proxy: ""
@@ -63,7 +63,7 @@ metadata:
     app.kubernetes.io/version: "v1.0"
     app.kubernetes.io/managed-by: Helm
 data:
-  HUGGINGFACEHUB_API_TOKEN: "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"
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
   HF_HOME: "/tmp/.cache/huggingface"
   http_proxy: ""
   https_proxy: ""
@@ -122,7 +122,7 @@ data:
   https_proxy: ""
   no_proxy: ""
   HF_HOME: "/tmp/.cache/huggingface"
-  HUGGINGFACEHUB_API_TOKEN: "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"
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
   LOGFLAG: ""
 ---
 # Source: chatqna/charts/tei/templates/configmap.yaml

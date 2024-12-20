@@ -15,7 +15,10 @@ if [[ "$STACK_OPERATION" == "Create" || "$STACK_OPERATION" == "Update" ]]; then
     cdk deploy OpeaGuardrailsStack --require-approval never --method prepare-change-set --change-set-name guardrails-change-set
     cdk deploy OpeaOpensearchStack --require-approval never --method prepare-change-set --change-set-name opensearch-change-set
     cdk deploy OpeaBedrockStack --require-approval never --method prepare-change-set --change-set-name bedrock-change-set
-    cdk deploy OpeaRemoteInferenceStack --require-approval never --method prepare-change-set --change-set-name denvr-change-set
+    
+    if [[ -n $REMOTE_INFERENCE_CLIENT_ID ]]; then    
+        cdk deploy OpeaRemoteInferenceStack --require-approval never --method prepare-change-set --change-set-name denvr-change-set
+    fi
 elif [ "$STACK_OPERATION" == "Delete" ]; then
     cdk destroy --force --all
 fi
