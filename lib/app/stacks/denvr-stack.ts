@@ -1,7 +1,7 @@
-import { DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnParameter, DefaultStackSynthesizer, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Cluster } from 'aws-cdk-lib/aws-eks';
-import { denvrOverrides } from '../constants';
+import { HuggingFaceToken, nginxOverride } from '../constants';
 import { ImportedCluster } from '../../construct/resources/imported';
 import { join } from 'path';
 
@@ -16,6 +16,18 @@ export class OpeaRemoteInferenceStack extends Stack {
       })
     });
 
+    const clientId = new CfnParameter(this, 'RemoteInferenceClientId', {
+      type: 'String',
+      description: "If you have an \"Inference API\" account, put your client id here to integrate it with your Opea Cluster. If you don't have a Remote Inference account, leave this blank.",
+      default: ""
+    })
+
+    const clientSecret = new CfnParameter(this, 'RemoteInferenceClientSecret', {
+      type: 'String',
+      description: "If you have an \"Inference API\" account, put your client secret here to integrate it with your Opea Cluster. If you don't have a Remote Inference account, leave this blank.",
+      default: ""
+    })
+
     new ImportedCluster(this, `remote-inference-imported`, {
       moduleName: 'ChatQnA',
       cluster,
@@ -28,7 +40,26 @@ export class OpeaRemoteInferenceStack extends Stack {
             join(__dirname, "../manifests/denvr.yml"),
             join(__dirname, '../manifests/denvr-ingress.yml')
           ],
-          overrides: denvrOverrides 
+          overrides: {
+              ...nginxOverride,
+              "chatqna-retriever-usvc-config": {
+                  "data": {
+                      "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
+                  }
+              },
+              "chatqna-data-prep-config": {
+                  "data": {
+                      "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
+                  }
+              },
+              "chatqna-llm-uservice-config": {
+                  "data": {
+                      "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken,
+                      "CLIENTID": clientId.valueAsString,
+                      "CLIENT_SECRET": clientSecret.valueAsString
+                  }
+              }
+          }
         }
       ]
     });

@@ -125,24 +125,3 @@ export const bedrockOverrides = {
         }
     }
 }
-
-export const denvrOverrides = {
-    ...nginxOverride,
-    "chatqna-retriever-usvc-config": {
-        "data": {
-            "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
-        }
-    },
-    "chatqna-data-prep-config": {
-        "data": {
-            "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken
-        }
-    },
-    "chatqna-llm-uservice-config": {
-        "data": {
-            "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken,
-            "CLIENTID": process.env.REMOTE_INFERENCE_CLIENT_ID || "",
-            "CLIENT_SECRET": process.env.REMOTE_INFERENCE_CLIENT_SECRET || "",
-        }
-    }
-}
