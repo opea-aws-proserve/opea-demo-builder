@@ -55,8 +55,8 @@ export class OpeaRemoteInferenceStack extends Stack {
               "chatqna-llm-uservice-config": {
                   "data": {
                       "HUGGINGFACEHUB_API_TOKEN": HuggingFaceToken,
-                      "CLIENTID": clientId.valueAsString,
-                      "CLIENT_SECRET": clientSecret.valueAsString
+                      "CLIENTID": clientId.valueAsString || process.env.REMOTE_INFERENCE_CLIENT_ID,
+                      "CLIENT_SECRET": clientSecret.valueAsString || process.env.REMOTE_INFERENCE_CLIENT_SECRET
                   }
               }
           }
