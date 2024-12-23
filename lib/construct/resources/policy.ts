@@ -7,7 +7,7 @@ export class OpeaWorkshopPolicy extends Construct {
 
     constructor(scope:Construct, id:string, additionalStatements:PolicyStatement[] = []) {
         super(scope,id);
-        this.root = new ManagedPolicy(scope, id, {
+        this.root = new ManagedPolicy(scope, `${id}-root`, {
             managedPolicyName: id,
             description: "Attach this policy to your user or assumed role in order to perform console actions for the Opea workshop.",
             statements: [
