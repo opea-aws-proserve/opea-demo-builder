@@ -14,7 +14,14 @@ export class OpeaWorkshopPolicy extends Construct {
                 new PolicyStatement({
                     effect: Effect.ALLOW,
                     actions: [
-                        "cloudformation:ExecuteChangeSet"
+                        "cloudformation:ExecuteChangeSet",
+                        "cloudformation:CreateChangeSet",
+                        "cloudformation:DescribeStacks",
+                        "cloudformation:DescribeChangeSet",
+                        "cloudformation:ListChangeSets",
+                        "cloudformation:ListExports",
+                        "cloudformation:ListStacks",
+                        "cloudformation:UpdateStack"
                     ],
                     resources: [
                         createArn(this, "OpeaChatQnAStack/*", "cloudformation:stack"),
