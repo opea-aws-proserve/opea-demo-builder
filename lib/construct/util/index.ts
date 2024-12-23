@@ -1,9 +1,11 @@
 import { AlbControllerVersion, ClusterLoggingTypes, ICluster, KubernetesManifest, KubernetesVersion } from "aws-cdk-lib/aws-eks";
 import { lstatSync, readdirSync } from "fs";
 import { join } from "path";
-import { KubernetesModuleContainer, KubernetesModuleOptions } from "./types";
+import { CreateArnOptions, KubernetesModuleContainer, KubernetesModuleOptions } from "./types";
 import { OpeaEksCluster } from "../resources/cluster";
 import { KubernetesModule } from "../modules/kubernetes-module";
+import { Construct } from "constructs";
+import { Stack } from "aws-cdk-lib";
 
 
 export function getVersionNumber(vString:string | number): number {
@@ -109,5 +111,17 @@ export function addManifests(
             if (namespace) manifest.node.addDependency(namespace);
         })
     });  
+}
+
+export function createArn(
+    scope: Construct, 
+    id: string,
+    $service:string, 
+    props: CreateArnOptions = {}
+): string {
+    const stack = Stack.of(scope);
+    const [service, feature] = $service.split(/[\:\/]/);
+    if (!feature) throw new Error(`Invalid service name: ${$service} should follow the format '<service>:<feature>'`);
+    return `arn:aws:${service}:${props.omitRegion ? "" : stack.region}:${stack.account}:${feature}/${id}`;
 }
 

@@ -2,7 +2,6 @@ import { InstanceType, IVpc, SecurityGroup, SubnetSelection } from "aws-cdk-lib/
 import { Cluster, ClusterProps, HelmChartOptions } from "aws-cdk-lib/aws-eks"
 import { Asset } from "aws-cdk-lib/aws-s3-assets"
 
-
 export interface OpeaEksProps {
     moduleName: string
     modelId?:string
@@ -199,4 +198,9 @@ export interface ManifestSecurityContext {
     runAsNonRoot?: boolean
     runAsUser?: number
     seccompProfile?: { type: string }
+}
+
+export interface CreateArnOptions {
+    omitRegion?:boolean
+    
 }
